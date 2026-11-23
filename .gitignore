@@ -1,0 +1,47 @@
+# Xcode
+build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+
+# Swift Package Manager
+.build/
+
+# Apple-hosted asset pack archives (generated)
+dist/asset-packs/
+
+# App Store Connect upload credentials (copy from *.env.example)
+scripts/*.env
+*.p8
+
+# Mac OS
+.DS_Store
+
+# ---------------------------------------------------
+# ML Models & Weights
+# ---------------------------------------------------
+# Exclude the Shap-E weights directory and vocab files
+runtime_bundle/
+.weights-fetch/
+# bpe_simple_vocab_16e6.txt.gz is committed (1.3 MB CLIP vocab, MIT via OpenAI CLIP)
+# so a fresh clone builds before first-launch weights download.
+
+# Broad wildcards for model weights to be safe
+*.safetensors
+*.bin
+*.pt
+*.onnx
+*.mlmodel
+*.mlpackage

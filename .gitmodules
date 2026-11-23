@@ -1,0 +1,3 @@
+[submodule "Vendor/apple-mlx-foundations"]
+	path = Vendor/apple-mlx-foundations
+	url = https://github.com/signalnotnoise/apple-mlx-foundations.git

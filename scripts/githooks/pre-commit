@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Block commits that change Swift without updating the knowledge graph.
+set -euo pipefail
+root="$(git rev-parse --show-toplevel)"
+exec "$root/scripts/check-knowledge-graph.sh"

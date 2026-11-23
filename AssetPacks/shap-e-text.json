@@ -1,0 +1,24 @@
+{
+  "assetPackID": "shap-e-text",
+  "downloadPolicy": {
+    "essential": {
+      "installationEventTypes": [
+        "firstInstallation",
+        "subsequentUpdate"
+      ]
+    }
+  },
+  "fileSelectors": [
+    { "file": "runtime_bundle/manifest.json" },
+    { "directory": "runtime_bundle/clip_text" },
+    { "directory": "runtime_bundle/text300m" },
+    { "directory": "runtime_bundle/decoder_params" },
+    { "directory": "runtime_bundle/diffusion" },
+    { "directory": "runtime_bundle/renderer" }
+  ],
+  "platforms": [
+    "iOS",
+    "macOS",
+    "visionOS"
+  ]
+}

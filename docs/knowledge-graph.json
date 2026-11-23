@@ -1,0 +1,139 @@
+{
+  "schema": "mesquette.knowledge-graph.v1",
+  "generated": "2026-11-17",
+  "branch": "feature/visionOS",
+  "product": {
+    "name": "Mesquette",
+    "codeName": "Mesquette",
+    "bundleId": "com.visionarydevops.Mesquette",
+    "primaryUI": "macOS",
+    "purpose": "On-device scene ideation: Foundation Models split a brief, Shap-E text300m sculpts one closed mesh per pin or part."
+  },
+  "packages": [
+    { "id": "mlx-swift", "kind": "remote", "url": "https://github.com/ml-explore/mlx-swift" },
+    { "id": "ShapERuntime", "kind": "submodule", "path": "Vendor/apple-mlx-foundations/shap_e/swift", "url": "https://github.com/signalnotnoise/apple-mlx-foundations", "pinned": "v0.1.0 018215715177943fe72cea8e540bc7b80dcb593f" },
+    { "id": "RuntimeWrapper", "kind": "submodule", "path": "Vendor/apple-mlx-foundations/runtime_wrapper", "url": "https://github.com/signalnotnoise/apple-mlx-foundations", "pinned": "v0.1.0 018215715177943fe72cea8e540bc7b80dcb593f" },
+    { "id": "RealityKitContent", "kind": "local", "path": "Packages/RealityKitContent" }
+  ],
+  "invariants": [
+    { "id": "pins-are-queue", "text": "Generate fills empty pins only. Retry is same prompt + new seed, not a re-plan." },
+    { "id": "no-pose", "text": "Do not LLM-pose or lock-rotate meshes. Plant at pin; keep Shap-E rotation. Pin y is height." },
+    { "id": "no-rewrite-english", "text": "Do not sanitize or clip the user scene. Strip only CAD/8K/photorealistic/highly detailed." },
+    { "id": "no-whole-scene-prompt", "text": "Never paste the full scene into a per-object Shap-E prompt." },
+    { "id": "extras-opt-in", "text": "Leftover pins stay empty unless Extra props slider > 0. Invalid extras are skipped, not generic fallbacks." },
+    { "id": "pack-by-pinID", "text": "packRecords locks placement by record.pinID. Do not map record i to pin i when pinID is set." },
+    { "id": "trust-height", "text": "Tagging floor/airborne wins over looksAirborne." },
+    { "id": "identity-phrase", "text": "Object identity is inventory UUID + normalized full phrase, not shortObjectTitle last word." },
+    { "id": "ground-not-mesh", "text": "Ground/sea/grass/sky are never meshes. Named forest/meadow patches are one closed mound; pin refit does not expand fills." },
+    { "id": "two-fm-jobs", "text": "contentTagging = named objects + height. default model = leftover extras. Compile is a separate entry point." },
+    { "id": "no-agent-loop", "text": "No until-complete loop. No LLM vision-evaluate of meshes." },
+    { "id": "load-retry", "text": "Failed ShapERuntimeStore loadTask must be cleared so Generate can retry." },
+    { "id": "pin-ownership", "text": "Pin.recordID and record.pinID stay in sync. Unbind only if the pin still belongs to that record." },
+    { "id": "triposr-image-only", "text": "TripoSR is image-to-3D only. Picker forces image mode; text, Compile, and pin scenes always run on Shap-E." }
+  ],
+  "nodes": [
+    { "id": "AppModel", "type": "state", "path": "Mesquette/AppModel.swift", "summary": "Shared app state: prompt, pins, generationDict, extras budget, pinPlanNote." },
+    { "id": "ContentViewModel", "type": "orchestrator", "path": "Mesquette/ContentViewViewModel.swift", "summary": "generateAtPins, generateMesh, generateMeshSet, retryPin, Shap-E jobs." },
+    { "id": "DirectorClient", "type": "fm", "path": "Mesquette/Director/DirectorClient.swift", "summary": "Foundation Models sessions; assignmentsMatchingPinIndex." },
+    { "id": "DirectorStaging", "type": "planner", "path": "Mesquette/Director/DirectorStaging.swift", "summary": "Code cast, identity, prompt validation, namedPinJobs." },
+    { "id": "DirectorLayoutEngine", "type": "layout", "path": "Mesquette/Director/DirectorLayoutEngine.swift", "summary": "Slots to meters, AABB fit, packRecords by pinID." },
+    { "id": "DirectorGenerable", "type": "schema", "path": "Mesquette/Director/DirectorGenerable.swift", "summary": "@Generable types for compile, invent, extras, tagging." },
+    { "id": "DirectorSystemPrompt", "type": "prompt", "path": "Mesquette/Director/DirectorSystemPrompt.swift", "summary": "compile text, invent, contentTagText, pinPlanText, scenePinPlanText." },
+    { "id": "DirectorSession", "type": "session", "path": "Mesquette/Director/DirectorSession.swift", "summary": "apply/revert compile; stamp metadata only on prompt match." },
+    { "id": "PlacementPin", "type": "entity", "path": "Mesquette/Director/PlacementPin.swift", "summary": "Clicked table point. y>=0.15 airborne. recordID. max 100." },
+    { "id": "PinAssignment", "type": "entity", "path": "Mesquette/Director/PinAssignment.swift", "summary": "One Shap-E job bound to pinID with inventoryID and route." },
+    { "id": "GenerationRecord", "type": "entity", "path": "Mesquette/GenerationRecord.swift", "summary": "History mesh + pinID + inventoryID + planRoute + offsets." },
+    { "id": "CompiledPrompt", "type": "entity", "path": "Mesquette/Director/CompiledPrompt.swift", "summary": "Compile output; normalized() caps 6 and drops ground-like parts." },
+    { "id": "ShapERuntimeStore", "type": "runtime", "path": "Mesquette/ShapERuntimeStore.swift", "summary": "Actor load of Shap-E; loadEpoch clears failed tasks." },
+    { "id": "RuntimeAssetLocator", "type": "runtime", "path": "Mesquette/RuntimeAssetLocator.swift", "summary": "Resolution order bundled → Background Assets (team-ID gated; BA traps without one) → HF cache." },
+    { "id": "HFBundleDownloader", "type": "runtime", "path": "Mesquette/HFBundleDownloader.swift", "summary": "Pinned HF snapshots via HubApi (shap-e-mlx d71f70a, triposr-mlx 17a0c52); SHA-256 verify + stamp." },
+    { "id": "TripoSRStore", "type": "runtime", "path": "Mesquette/TripoSRStore.swift", "summary": "Actor: builds ThreeDGenerationRuntime (.tripoSR) from verified weights; failed loads not cached." },
+    { "id": "MeshExporter", "type": "export", "path": "Mesquette/MeshExporter.swift", "summary": "OBJ+MTL ZIP, USDZ, validatedFaceIndices." },
+    { "id": "ShapEMeshAdapter", "type": "viewport", "path": "Mesquette/ShapEMeshAdapter.swift", "summary": "visionOS MeshResult to RealityKit; shares face validation." },
+    { "id": "SceneKitStudio", "type": "viewport", "path": "Mesquette/macOS/SceneKitStudio.swift", "summary": "Plant mesh at pin without rest-pose sit." },
+    { "id": "StudioCamera", "type": "viewport", "path": "Mesquette/macOS/StudioCamera.swift", "summary": "Orbit tumble / top / walk. Not arcball." },
+    { "id": "MacChatPanel", "type": "ui", "path": "Mesquette/macOS/MacChatPanelView.swift", "summary": "Create panel; Extra props slider; pinPlanNote." },
+    { "id": "Mac3DPreview", "type": "ui", "path": "Mesquette/macOS/Mac3DPreviewView.swift", "summary": "SceneKit canvas, pin click/drag/retry." },
+    { "id": "FMTagging", "type": "model", "summary": "SystemLanguageModel(useCase: .contentTagging) — named objects + floor/air." },
+    { "id": "FMDefault", "type": "model", "summary": "SystemLanguageModel.default — extras and Compile/Invent." },
+    { "id": "ShapE", "type": "model", "summary": "Shap-E text300m CLIP-conditioned diffusion. One closed volume per prompt." },
+    { "id": "AssetDownloader", "type": "extension", "path": "AssetDownloader/BackgroundDownloadHandler.swift", "summary": "Background Assets StoreDownloaderExtension." }
+  ],
+  "edges": [
+    { "from": "MacChatPanel", "to": "ContentViewModel", "rel": "calls", "note": "generateAtPins when pins exist" },
+    { "from": "Mac3DPreview", "to": "AppModel", "rel": "writes", "note": "add/move/remove pins" },
+    { "from": "ContentViewModel", "to": "DirectorClient", "rel": "calls", "note": "tagSceneCast then planPins extras" },
+    { "from": "ContentViewModel", "to": "DirectorStaging", "rel": "calls", "note": "resolvedCast, namedPinJobs, fallbackPinJobs" },
+    { "from": "ContentViewModel", "to": "ShapERuntimeStore", "rel": "calls", "note": "runtime() per job" },
+    { "from": "ContentViewModel", "to": "DirectorLayoutEngine", "rel": "calls", "note": "packRecords after meshes" },
+    { "from": "DirectorClient", "to": "FMTagging", "rel": "uses", "note": "tagSceneCast" },
+    { "from": "DirectorClient", "to": "FMDefault", "rel": "uses", "note": "planPins extras, compile, invent" },
+    { "from": "DirectorClient", "to": "DirectorGenerable", "rel": "decodes" },
+    { "from": "DirectorGenerable", "to": "DirectorStaging", "rel": "maps", "note": "ingestTaggedObject trusts height" },
+    { "from": "DirectorStaging", "to": "PinAssignment", "rel": "produces", "note": "route named or fallback" },
+    { "from": "DirectorClient", "to": "PinAssignment", "rel": "produces", "note": "route extra, pinIndex map" },
+    { "from": "PinAssignment", "to": "PlacementPin", "rel": "targets", "note": "pinID" },
+    { "from": "ContentViewModel", "to": "GenerationRecord", "rel": "creates" },
+    { "from": "AppModel", "to": "PlacementPin", "rel": "owns" },
+    { "from": "AppModel", "to": "GenerationRecord", "rel": "owns", "note": "generationDict two-sided bind" },
+    { "from": "GenerationRecord", "to": "PlacementPin", "rel": "bound-by", "note": "pinID <-> recordID" },
+    { "from": "ShapERuntimeStore", "to": "ShapE", "rel": "loads" },
+    { "from": "RuntimeAssetLocator", "to": "ShapERuntimeStore", "rel": "feeds" },
+    { "from": "RuntimeAssetLocator", "to": "HFBundleDownloader", "rel": "falls back to" },
+    { "from": "TripoSRStore", "to": "HFBundleDownloader", "rel": "resolves weights via" },
+    { "from": "ContentViewModel", "to": "TripoSRStore", "rel": "calls", "note": "image generate when generationModel == .tripoSR" },
+    { "from": "ShapE", "to": "GenerationRecord", "rel": "writes", "note": "MeshResult" },
+    { "from": "GenerationRecord", "to": "SceneKitStudio", "rel": "renders-on", "note": "macOS/iOS" },
+    { "from": "GenerationRecord", "to": "ShapEMeshAdapter", "rel": "renders-on", "note": "visionOS" },
+    { "from": "DirectorLayoutEngine", "to": "GenerationRecord", "rel": "places", "note": "offsets from pinID" },
+    { "from": "DirectorSession", "to": "AppModel", "rel": "mutates", "note": "compile apply/revert/stamp" },
+    { "from": "MeshExporter", "to": "GenerationRecord", "rel": "reads", "note": "latestMesh" },
+    { "from": "StudioCamera", "to": "Mac3DPreview", "rel": "drives" }
+  ],
+  "flows": [
+    {
+      "id": "generate-at-pins",
+      "primary": true,
+      "steps": [
+        "User drops pins and writes a scene. Extra props slider 0…leftover (code-cast extraPins.count).",
+        "generateAtPins takes empty pins only.",
+        "tagSceneCast 25s timeout → resolvedCast (tagging ≥2 objects, else spatial pair, else comma sceneCast).",
+        "namedPinJobs plants named objects by height and hero-near-center.",
+        "If extras budget > 0, default FM plans leftover pins; assignmentsMatchingPinIndex; skip generic/whole-scene.",
+        "Each job: Shap-E at pin xyz, bindPin both sides, log route named|extra|fallback.",
+        "refitSet packRecords by pinID. pinPlanNote reports generated vs empty leftover."
+      ]
+    },
+    {
+      "id": "compile-set",
+      "primary": false,
+      "steps": [
+        "compile() default FM + DirectorSystemPrompt.text → CompiledPrompt.normalized().",
+        "applyTemplate or applyPins. generateMeshSet sequential Shap-E.",
+        "Independent of Generate-at-pins."
+      ]
+    },
+    {
+      "id": "retry-pin",
+      "primary": false,
+      "steps": [
+        "Double-click filled pin. Same shapEPrompt, seed+17, same pinID. No re-plan."
+      ]
+    }
+  ],
+  "maintenance": {
+    "rule": "Any Swift change under Mesquette/, AssetDownloader/, or MesquetteTests/ must update docs/knowledge-graph.md and docs/knowledge-graph.json in the same turn.",
+    "check": "scripts/check-knowledge-graph.sh",
+    "installHooks": "scripts/install-git-hooks.sh",
+    "triggerGlobs": [
+      "Mesquette/**/*.swift",
+      "AssetDownloader/**/*.swift",
+      "MesquetteTests/**/*.swift"
+    ]
+  },
+  "verify": {
+    "macBuild": "DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer xcodebuild -scheme Mesquette -destination 'platform=macOS,arch=arm64' build",
+    "tests": "MesquetteTests is visionOS-only; RuntimeAssetLocator availability currently blocks xrsimulator compile on 26.2 deployment vs 27 APIs.",
+    "doNot": "Do not score Shap-E mesh quality in CI."
+  }
+}

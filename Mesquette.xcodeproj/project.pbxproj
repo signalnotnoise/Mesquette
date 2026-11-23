@@ -1,0 +1,851 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		933ABE0C2F8DA96D002518F6 /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = 933ABE0B2F8DA96D002518F6 /* RealityKitContent */; };
+		933ABE2F2F8DA9CB002518F6 /* MLX in Frameworks */ = {isa = PBXBuildFile; productRef = 933ABE2E2F8DA9CB002518F6 /* MLX */; };
+		933ABE312F8DA9CB002518F6 /* MLXFFT in Frameworks */ = {isa = PBXBuildFile; productRef = 933ABE302F8DA9CB002518F6 /* MLXFFT */; };
+		933ABE332F8DA9CB002518F6 /* MLXFast in Frameworks */ = {isa = PBXBuildFile; productRef = 933ABE322F8DA9CB002518F6 /* MLXFast */; };
+		933ABE352F8DA9CB002518F6 /* MLXLinalg in Frameworks */ = {isa = PBXBuildFile; productRef = 933ABE342F8DA9CB002518F6 /* MLXLinalg */; };
+		933ABE372F8DA9CB002518F6 /* MLXNN in Frameworks */ = {isa = PBXBuildFile; productRef = 933ABE362F8DA9CB002518F6 /* MLXNN */; };
+		933ABE3A2F8DA9F7002518F6 /* ShapERuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 933ABE392F8DA9F7002518F6 /* ShapERuntime */; };
+		93A4707A2F9921FC00662A91 /* bpe_simple_vocab_16e6.txt.gz in Resources */ = {isa = PBXBuildFile; fileRef = 93A470792F9921FC00662A91 /* bpe_simple_vocab_16e6.txt.gz */; };
+		A7F00D132FA2CB950050C230 /* Hub in Frameworks */ = {isa = PBXBuildFile; productRef = A7F00D122FA2CB950050C230 /* Hub */; };
+		B7F00D132FA2CB950050C230 /* RuntimeWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = B7F00D122FA2CB950050C230 /* RuntimeWrapper */; };
+		B0A5E70A2F8DA96D002518F6 /* AssetDownloader.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B0A5E7012F8DA96D002518F6 /* AssetDownloader.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		933ABE1B2F8DA96E002518F6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 933ABDFE2F8DA96D002518F6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 933ABE052F8DA96D002518F6;
+			remoteInfo = Mesquette;
+		};
+		B0A5E7082F8DA96D002518F6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 933ABDFE2F8DA96D002518F6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B0A5E7022F8DA96D002518F6;
+			remoteInfo = AssetDownloader;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B0A5E7062F8DA96D002518F6 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(BUNDLE_EXTENSIONS_FOLDER_PATH)";
+			dstSubfolderSpec = 1;
+			files = (
+				B0A5E70A2F8DA96D002518F6 /* AssetDownloader.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		933ABE062F8DA96D002518F6 /* Mesquette.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mesquette.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		933ABE0A2F8DA96D002518F6 /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
+		933ABE1A2F8DA96E002518F6 /* MesquetteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MesquetteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		93A470792F9921FC00662A91 /* bpe_simple_vocab_16e6.txt.gz */ = {isa = PBXFileReference; lastKnownFileType = archive.gzip; path = bpe_simple_vocab_16e6.txt.gz; sourceTree = "<group>"; };
+		B0A5E7012F8DA96D002518F6 /* AssetDownloader.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = AssetDownloader.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		933ABE202F8DA96E002518F6 /* Exceptions for "Mesquette" folder in "Mesquette" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 933ABE052F8DA96D002518F6 /* Mesquette */;
+		};
+		B0A5E7102F8DA96D002518F6 /* Exceptions for "AssetDownloader" folder in "AssetDownloader" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = B0A5E7022F8DA96D002518F6 /* AssetDownloader */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		933ABE082F8DA96D002518F6 /* Mesquette */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				933ABE202F8DA96E002518F6 /* Exceptions for "Mesquette" folder in "Mesquette" target */,
+			);
+			path = Mesquette;
+			sourceTree = "<group>";
+		};
+		933ABE1D2F8DA96E002518F6 /* MesquetteTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MesquetteTests;
+			sourceTree = "<group>";
+		};
+		B0A5E7092F8DA96D002518F6 /* AssetDownloader */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B0A5E7102F8DA96D002518F6 /* Exceptions for "AssetDownloader" folder in "AssetDownloader" target */,
+			);
+			path = AssetDownloader;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		933ABE032F8DA96D002518F6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B7F00D132FA2CB950050C230 /* RuntimeWrapper in Frameworks */,
+				A7F00D132FA2CB950050C230 /* Hub in Frameworks */,
+				933ABE3A2F8DA9F7002518F6 /* ShapERuntime in Frameworks */,
+				933ABE372F8DA9CB002518F6 /* MLXNN in Frameworks */,
+				933ABE352F8DA9CB002518F6 /* MLXLinalg in Frameworks */,
+				933ABE2F2F8DA9CB002518F6 /* MLX in Frameworks */,
+				933ABE0C2F8DA96D002518F6 /* RealityKitContent in Frameworks */,
+				933ABE332F8DA9CB002518F6 /* MLXFast in Frameworks */,
+				933ABE312F8DA9CB002518F6 /* MLXFFT in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		933ABE172F8DA96E002518F6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B0A5E70C2F8DA96D002518F6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		933ABDFD2F8DA96D002518F6 = {
+			isa = PBXGroup;
+			children = (
+				93A470792F9921FC00662A91 /* bpe_simple_vocab_16e6.txt.gz */,
+				933ABE082F8DA96D002518F6 /* Mesquette */,
+				B0A5E7092F8DA96D002518F6 /* AssetDownloader */,
+				933ABE092F8DA96D002518F6 /* Packages */,
+				933ABE1D2F8DA96E002518F6 /* MesquetteTests */,
+				933ABE072F8DA96D002518F6 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		933ABE072F8DA96D002518F6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				933ABE062F8DA96D002518F6 /* Mesquette.app */,
+				933ABE1A2F8DA96E002518F6 /* MesquetteTests.xctest */,
+				B0A5E7012F8DA96D002518F6 /* AssetDownloader.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		933ABE092F8DA96D002518F6 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				933ABE0A2F8DA96D002518F6 /* RealityKitContent */,
+			);
+			path = Packages;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		933ABE052F8DA96D002518F6 /* Mesquette */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 933ABE212F8DA96E002518F6 /* Build configuration list for PBXNativeTarget "Mesquette" */;
+			buildPhases = (
+				933ABE022F8DA96D002518F6 /* Sources */,
+				933ABE032F8DA96D002518F6 /* Frameworks */,
+				933ABE042F8DA96D002518F6 /* Resources */,
+				B0A5E7062F8DA96D002518F6 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B0A5E7072F8DA96D002518F6 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				933ABE082F8DA96D002518F6 /* Mesquette */,
+			);
+			name = Mesquette;
+			packageProductDependencies = (
+				933ABE0B2F8DA96D002518F6 /* RealityKitContent */,
+				933ABE2E2F8DA9CB002518F6 /* MLX */,
+				933ABE302F8DA9CB002518F6 /* MLXFFT */,
+				933ABE322F8DA9CB002518F6 /* MLXFast */,
+				933ABE342F8DA9CB002518F6 /* MLXLinalg */,
+				933ABE362F8DA9CB002518F6 /* MLXNN */,
+				933ABE392F8DA9F7002518F6 /* ShapERuntime */,
+				A7F00D122FA2CB950050C230 /* Hub */,
+				B7F00D122FA2CB950050C230 /* RuntimeWrapper */,
+			);
+			productName = Mesquette;
+			productReference = 933ABE062F8DA96D002518F6 /* Mesquette.app */;
+			productType = "com.apple.product-type.application";
+		};
+		933ABE192F8DA96E002518F6 /* MesquetteTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 933ABE262F8DA96E002518F6 /* Build configuration list for PBXNativeTarget "MesquetteTests" */;
+			buildPhases = (
+				933ABE162F8DA96E002518F6 /* Sources */,
+				933ABE172F8DA96E002518F6 /* Frameworks */,
+				933ABE182F8DA96E002518F6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				933ABE1C2F8DA96E002518F6 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				933ABE1D2F8DA96E002518F6 /* MesquetteTests */,
+			);
+			name = MesquetteTests;
+			packageProductDependencies = (
+			);
+			productName = MesquetteTests;
+			productReference = 933ABE1A2F8DA96E002518F6 /* MesquetteTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		B0A5E7022F8DA96D002518F6 /* AssetDownloader */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B0A5E7032F8DA96D002518F6 /* Build configuration list for PBXNativeTarget "AssetDownloader" */;
+			buildPhases = (
+				B0A5E70B2F8DA96D002518F6 /* Sources */,
+				B0A5E70C2F8DA96D002518F6 /* Frameworks */,
+				B0A5E70D2F8DA96D002518F6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				B0A5E7092F8DA96D002518F6 /* AssetDownloader */,
+			);
+			name = AssetDownloader;
+			packageProductDependencies = (
+			);
+			productName = AssetDownloader;
+			productReference = B0A5E7012F8DA96D002518F6 /* AssetDownloader.appex */;
+			productType = "com.apple.product-type.extensionkit-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		933ABDFE2F8DA96D002518F6 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2630;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					933ABE052F8DA96D002518F6 = {
+						CreatedOnToolsVersion = 26.3;
+					};
+					933ABE192F8DA96E002518F6 = {
+						CreatedOnToolsVersion = 26.3;
+						TestTargetID = 933ABE052F8DA96D002518F6;
+					};
+					B0A5E7022F8DA96D002518F6 = {
+						CreatedOnToolsVersion = 26.3;
+					};
+				};
+			};
+			buildConfigurationList = 933ABE012F8DA96D002518F6 /* Build configuration list for PBXProject "Mesquette" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 933ABDFD2F8DA96D002518F6;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				933ABE2D2F8DA9CB002518F6 /* XCRemoteSwiftPackageReference "mlx-swift" */,
+				A7F00D112FA2CB950050C230 /* XCRemoteSwiftPackageReference "swift-transformers" */,
+				933ABE382F8DA9F7002518F6 /* XCLocalSwiftPackageReference "Vendor/apple-mlx-foundations/shap_e/swift" */,
+				B7F00D112FA2CB950050C230 /* XCLocalSwiftPackageReference "Vendor/apple-mlx-foundations/runtime_wrapper" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 933ABE072F8DA96D002518F6 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				933ABE052F8DA96D002518F6 /* Mesquette */,
+				933ABE192F8DA96E002518F6 /* MesquetteTests */,
+				B0A5E7022F8DA96D002518F6 /* AssetDownloader */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		933ABE042F8DA96D002518F6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				93A4707A2F9921FC00662A91 /* bpe_simple_vocab_16e6.txt.gz in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		933ABE182F8DA96E002518F6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B0A5E70D2F8DA96D002518F6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		933ABE022F8DA96D002518F6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		933ABE162F8DA96E002518F6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B0A5E70B2F8DA96D002518F6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		933ABE1C2F8DA96E002518F6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 933ABE052F8DA96D002518F6 /* Mesquette */;
+			targetProxy = 933ABE1B2F8DA96E002518F6 /* PBXContainerItemProxy */;
+		};
+		B0A5E7072F8DA96D002518F6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B0A5E7022F8DA96D002518F6 /* AssetDownloader */;
+			targetProxy = B0A5E7082F8DA96D002518F6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		933ABE222F8DA96E002518F6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				AUTOMATION_APPLE_EVENTS = NO;
+				CODE_SIGN_ENTITLEMENTS = Mesquette/Mesquette.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3M53U7Y396;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = YES;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "$(TARGET_NAME)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Mesquette;
+				INFOPLIST_KEY_CFBundleName = Mesquette;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.graphics-design";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.visionarydevops.Mesquette;
+				PRODUCT_MODULE_NAME = Mesquette;
+				PRODUCT_NAME = Mesquette;
+				REGISTER_APP_GROUPS = YES;
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
+				RUNTIME_EXCEPTION_ALLOW_JIT = NO;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+			};
+			name = Debug;
+		};
+		933ABE232F8DA96E002518F6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				AUTOMATION_APPLE_EVENTS = NO;
+				CODE_SIGN_ENTITLEMENTS = Mesquette/Mesquette.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3M53U7Y396;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = YES;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
+				EXCLUDED_SOURCE_FILE_NAMES = runtime_bundle;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "$(TARGET_NAME)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Mesquette;
+				INFOPLIST_KEY_CFBundleName = Mesquette;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.graphics-design";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.visionarydevops.Mesquette;
+				PRODUCT_MODULE_NAME = Mesquette;
+				PRODUCT_NAME = Mesquette;
+				REGISTER_APP_GROUPS = YES;
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
+				RUNTIME_EXCEPTION_ALLOW_JIT = NO;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+			};
+			name = Release;
+		};
+		933ABE242F8DA96E002518F6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = M68458CPXL;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = xros;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+				XROS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Debug;
+		};
+		933ABE252F8DA96E002518F6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = M68458CPXL;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = xros;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 6.0;
+				VALIDATE_PRODUCT = YES;
+				XROS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Release;
+		};
+		933ABE272F8DA96E002518F6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M68458CPXL;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.visionarydevops.MesquetteTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 7;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mesquette.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Mesquette";
+				XROS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Debug;
+		};
+		933ABE282F8DA96E002518F6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M68458CPXL;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.visionarydevops.MesquetteTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 7;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mesquette.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Mesquette";
+				XROS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Release;
+		};
+		B0A5E7042F8DA96D002518F6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = AssetDownloader/AssetDownloader.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3M53U7Y396;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AssetDownloader/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Mesquette Assets";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.visionarydevops.Mesquette.AssetDownloader;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Debug;
+		};
+		B0A5E7052F8DA96D002518F6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = AssetDownloader/AssetDownloader.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3M53U7Y396;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AssetDownloader/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Mesquette Assets";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.visionarydevops.Mesquette.AssetDownloader;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		933ABE012F8DA96D002518F6 /* Build configuration list for PBXProject "Mesquette" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				933ABE242F8DA96E002518F6 /* Debug */,
+				933ABE252F8DA96E002518F6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		933ABE212F8DA96E002518F6 /* Build configuration list for PBXNativeTarget "Mesquette" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				933ABE222F8DA96E002518F6 /* Debug */,
+				933ABE232F8DA96E002518F6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		933ABE262F8DA96E002518F6 /* Build configuration list for PBXNativeTarget "MesquetteTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				933ABE272F8DA96E002518F6 /* Debug */,
+				933ABE282F8DA96E002518F6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B0A5E7032F8DA96D002518F6 /* Build configuration list for PBXNativeTarget "AssetDownloader" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B0A5E7042F8DA96D002518F6 /* Debug */,
+				B0A5E7052F8DA96D002518F6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		933ABE382F8DA9F7002518F6 /* XCLocalSwiftPackageReference "Vendor/apple-mlx-foundations/shap_e/swift" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "Vendor/apple-mlx-foundations/shap_e/swift";
+		};
+		B7F00D112FA2CB950050C230 /* XCLocalSwiftPackageReference "Vendor/apple-mlx-foundations/runtime_wrapper" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "Vendor/apple-mlx-foundations/runtime_wrapper";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		933ABE2D2F8DA9CB002518F6 /* XCRemoteSwiftPackageReference "mlx-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ml-explore/mlx-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.31.3;
+			};
+		};
+		A7F00D112FA2CB950050C230 /* XCRemoteSwiftPackageReference "swift-transformers" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/huggingface/swift-transformers";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.4.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		933ABE0B2F8DA96D002518F6 /* RealityKitContent */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RealityKitContent;
+		};
+		933ABE2E2F8DA9CB002518F6 /* MLX */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 933ABE2D2F8DA9CB002518F6 /* XCRemoteSwiftPackageReference "mlx-swift" */;
+			productName = MLX;
+		};
+		933ABE302F8DA9CB002518F6 /* MLXFFT */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 933ABE2D2F8DA9CB002518F6 /* XCRemoteSwiftPackageReference "mlx-swift" */;
+			productName = MLXFFT;
+		};
+		933ABE322F8DA9CB002518F6 /* MLXFast */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 933ABE2D2F8DA9CB002518F6 /* XCRemoteSwiftPackageReference "mlx-swift" */;
+			productName = MLXFast;
+		};
+		933ABE342F8DA9CB002518F6 /* MLXLinalg */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 933ABE2D2F8DA9CB002518F6 /* XCRemoteSwiftPackageReference "mlx-swift" */;
+			productName = MLXLinalg;
+		};
+		933ABE362F8DA9CB002518F6 /* MLXNN */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 933ABE2D2F8DA9CB002518F6 /* XCRemoteSwiftPackageReference "mlx-swift" */;
+			productName = MLXNN;
+		};
+		933ABE392F8DA9F7002518F6 /* ShapERuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 933ABE382F8DA9F7002518F6 /* XCLocalSwiftPackageReference "Vendor/apple-mlx-foundations/shap_e/swift" */;
+			productName = ShapERuntime;
+		};
+		A7F00D122FA2CB950050C230 /* Hub */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A7F00D112FA2CB950050C230 /* XCRemoteSwiftPackageReference "swift-transformers" */;
+			productName = Hub;
+		};
+		B7F00D122FA2CB950050C230 /* RuntimeWrapper */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B7F00D112FA2CB950050C230 /* XCLocalSwiftPackageReference "Vendor/apple-mlx-foundations/runtime_wrapper" */;
+			productName = RuntimeWrapper;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 933ABDFE2F8DA96D002518F6 /* Project object */;
+}

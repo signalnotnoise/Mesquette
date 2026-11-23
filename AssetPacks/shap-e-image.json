@@ -1,0 +1,20 @@
+{
+  "assetPackID": "shap-e-image",
+  "downloadPolicy": {
+    "prefetch": {
+      "installationEventTypes": [
+        "firstInstallation",
+        "subsequentUpdate"
+      ]
+    }
+  },
+  "fileSelectors": [
+    { "directory": "runtime_bundle/clip_vision" },
+    { "directory": "runtime_bundle/image300m" }
+  ],
+  "platforms": [
+    "iOS",
+    "macOS",
+    "visionOS"
+  ]
+}
