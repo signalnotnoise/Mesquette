@@ -5,7 +5,9 @@
 //   3. the pinned public Hugging Face bundle in Caches (HFBundleDownloader)
 
 import Foundation
+#if os(macOS)
 import Security
+#endif
 import System
 #if canImport(BackgroundAssets)
 import BackgroundAssets
@@ -43,6 +45,7 @@ enum RuntimeAssetLocator {
     /// so the hosted attempt must be gated on an actual team identifier —
     /// a do/catch cannot recover from it.
     static var hasTeamIdentifier: Bool {
+#if os(macOS)
         var code: SecCode?
         guard SecCodeCopySelf([], &code) == errSecSuccess, let code else { return false }
         var staticCode: SecStaticCode?
@@ -53,7 +56,27 @@ enum RuntimeAssetLocator {
               let team = dict[kSecCodeInfoTeamIdentifier as String] as? String
         else { return false }
         return !team.isEmpty
+#else
+        // SecCode doesn't exist off macOS. Signed iOS/visionOS builds always
+        // carry a provisioning profile naming a team; unsigned simulator
+        // builds don't — exactly the split the gate needs.
+        return provisioningTeamIdentifier != nil
+#endif
     }
+
+#if !os(macOS)
+    private static var provisioningTeamIdentifier: String? {
+        guard let url = Bundle.main.url(forResource: "embedded", withExtension: "mobileprovision"),
+              let data = try? Data(contentsOf: url),
+              let start = data.range(of: Data("<plist".utf8))?.lowerBound,
+              let end = data.range(of: Data("</plist>".utf8), options: .backwards)?.upperBound,
+              let plist = try? PropertyListSerialization.propertyList(
+                  from: data[start..<end], format: nil) as? [String: Any],
+              let teams = plist["TeamIdentifier"] as? [String]
+        else { return nil }
+        return teams.first { !$0.isEmpty }
+    }
+#endif
 
     private static func resolve(scope: HFBundleScope) async throws -> URL {
         if let bundled = bundledRuntimeURL() { return bundled }
@@ -77,6 +100,8 @@ enum RuntimeAssetLocator {
         if includingImage {
             try await ensurePack(id: imagePackID)
         } else {
+            // Opportunistic prefetch: failure only means the image pack
+            // downloads later via resolvedModelBundleURLIncludingImage().
             Task {
                 try? await ensurePack(id: imagePackID)
             }

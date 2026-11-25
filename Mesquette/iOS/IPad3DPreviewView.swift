@@ -179,10 +179,11 @@ struct IPad3DPreviewView: UIViewRepresentable {
         if mesh.faces.dataType == .int32 {
             idxData = mesh.faces.data
             indexCount = mesh.faces.elementCount
-        } else if mesh.faces.dataType == .int64, let raw = try? mesh.faces.int64Values() {
-            let idx32 = raw.map { Int32($0) }
-            idxData = idx32.withUnsafeBytes { Data($0) }
-            indexCount = idx32.count
+        } else if mesh.faces.dataType == .int64,
+                  let raw = try? mesh.faces.int64Values(),
+                  let validated = try? MeshExporter.validatedFaceIndices(raw, vertexCount: vertexCount) {
+            idxData = validated.withUnsafeBytes { Data($0) }
+            indexCount = validated.count
         } else {
             return nil
         }
@@ -232,10 +233,10 @@ extension IPad3DPreviewView {
         var lastShadingMode:  AppModel.ShadingMode = .smooth
 
         var addedNodes: [UUID: SCNNode] = [:]
-        var lastMeshStamp: [UUID: PreviewMeshStamp] = [:]
-        var lastTablePose: [UUID: AppliedTablePose] = [:]
+        fileprivate var lastMeshStamp: [UUID: PreviewMeshStamp] = [:]
+        fileprivate var lastTablePose: [UUID: AppliedTablePose] = [:]
 
-        private var undoStacks: [ObjectIdentifier: [NodeTransform]] = [:]
+        fileprivate var undoStacks: [ObjectIdentifier: [NodeTransform]] = [:]
         private let undoManager = UndoManager()
 
         // MARK: Drag state

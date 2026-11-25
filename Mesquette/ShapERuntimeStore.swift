@@ -50,6 +50,8 @@ nonisolated enum MLXForegroundGPU {
         guard !RuntimeLaunchContext.isXcodePreview else { return }
 #if os(iOS) || os(visionOS)
         await waitUntilActive()
+        // Documented settle exception: let the foreground transition land
+        // before the first Metal submit (see AGENTS.md). Not a race fix.
         try? await Task.sleep(for: .milliseconds(80))
 #endif
         await MainActor.run {

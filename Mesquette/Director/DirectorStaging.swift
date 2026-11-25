@@ -325,6 +325,7 @@ nonisolated enum DirectorStaging {
     }
 
     private static func firstCapture(_ text: String, _ pattern: String, group: Int) -> String? {
+        // try?: patterns are compile-time constants; a nil regex here is a programmer error surfaced as no-match.
         guard let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) else {
             return nil
         }

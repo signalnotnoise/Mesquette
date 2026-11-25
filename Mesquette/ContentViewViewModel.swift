@@ -102,6 +102,7 @@ class ContentViewModel {
             try await client.tagSceneCast(from: scene)
         }
         let timeoutTask = Task {
+            // Hard timeout (documented exception): tagging must never block Generate.
             try await Task.sleep(for: .seconds(25))
             planTask.cancel()
         }
@@ -152,6 +153,7 @@ class ContentViewModel {
             )
         }
         let timeoutTask = Task {
+            // Hard timeout (documented exception): extras are optional dressing.
             try await Task.sleep(for: .seconds(40))
             planTask.cancel()
         }
@@ -422,7 +424,16 @@ class ContentViewModel {
                         // to the foreground (the app's white composite for
                         // Shap-E would be meshed as a white slab).
                         appModel.progressPhaseLabel = "Preparing image…"
-                        let preparedImage = try? await ImageBackgroundRemoval.foregroundCutout(from: cgImage)
+                        let preparedImage: CGImage?
+                        do {
+                            preparedImage = try await ImageBackgroundRemoval.foregroundCutout(from: cgImage)
+                            if preparedImage == nil {
+                                Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.visionarydevops.Mesquette", category: "image").error("Foreground cutout returned nil; TripoSR will use the unprepared image")
+                            }
+                        } catch {
+                            Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.visionarydevops.Mesquette", category: "image").error("Foreground cutout failed, using unprepared image: \(error.localizedDescription, privacy: .public)")
+                            preparedImage = nil
+                        }
                         let tripo = try await TripoSRStore.shared.tripoRuntime()
                         meshResults = try await withMLXError {
                             try await tripo.generate(
@@ -1017,6 +1028,7 @@ class ContentViewModel {
                     record.finalMeshURL = fileURL
 
                     Task.detached(priority: .utility) {
+                        // Best-effort sidecar for reuse; the record itself is the source of truth.
                         if let data = try? PropertyListEncoder().encode(mesh) {
                             try? data.write(to: fileURL)
                         }

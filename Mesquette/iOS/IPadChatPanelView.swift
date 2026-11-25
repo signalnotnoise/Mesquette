@@ -210,7 +210,7 @@ struct IPadChatPanelView: View {
             guard let newItem else { return }
             appModel.isProcessingImage = true
             Task {
-                if let data = try? await newItem.loadTransferable(type: Data.self),
+                if let data = try? await newItem.loadTransferable(type: Data.self),  // try?: pick failure keeps current image and resets isProcessing below; nothing to surface
                    let rawImage = UIImage(data: data) {
                     var finalImg = rawImage
                     if let cgImage = rawImage.cgImage {
