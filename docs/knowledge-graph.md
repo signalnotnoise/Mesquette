@@ -214,7 +214,7 @@ Do not silently treat this as the pin path. Rewriting only `DirectorSystemPrompt
 | `DirectorGenerable.swift` | `@Generable` schemas + mapping into staging types |
 | `DirectorSystemPrompt.swift` | `text` (compile), `inventText`, `contentTagText`, `pinPlanText`, `scenePinPlanText` |
 | `DirectorSession.swift` | apply/revert/stamp onto AppModel |
-| `PlacementDebug.swift` | `os_log` for pin jobs |
+| `PlacementDebug.swift` | `os.Logger` (category `place`, prompt fragments `.private`) for pin jobs |
 
 ---
 

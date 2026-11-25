@@ -1,91 +1,124 @@
-Engineering Standards — Mesquette
+# Engineering Standards — Mesquette
 
-This document defines the baseline engineering bar for Mesquette. For day-to-day agent workflows, hard product invariants ("Do Not" rules), and build commands, see AGENTS.md and docs/knowledge-graph.md.
+The baseline bar. Day-to-day agent workflow, hard product invariants, and
+build commands live in [`AGENTS.md`](../AGENTS.md); architecture and
+dependencies live in [`knowledge-graph.md`](knowledge-graph.md). Where this
+doc and AGENTS.md overlap, AGENTS.md is the imperative short form — don't
+restate rules here, link to them.
 
-1. Core Principles & Simplicity
+## 1. Core Principles
 
-Favor the simplest viable solution. Complexity must be justified by a real requirement, never by hypothetical future needs.
+- **Simplest viable solution.** Complexity must be justified by a real
+  requirement, never hypothetical future needs.
+- **Optimize for the next maintainer.** Explicit, readable code; no
+  reverse-engineering required.
+- **Scoped changes.** Smallest complete change; no unrequested refactors
+  or unrelated edits.
 
-Optimize for the next maintainer. Write explicit, readable code that communicates intent without requiring reverse-engineering.
+## 2. Architecture & Swift Idioms
 
-Keep changes scoped. Implement the smallest complete change that satisfies the requirement. Avoid unrequested refactors or modifying unrelated code.
+- Respect the boundaries in AGENTS.md (Director is UI-agnostic, shells own
+  rendering, runtimes are vendored — never patch `Vendor/` in place).
+- Prefer value types and composition; `class` only where identity or an
+  Apple framework requires it (`AppModel`, view models, actors for stores).
+- One responsibility per file, but don't split cohesive helpers just to
+  satisfy a rule — synchronized groups make new files cheap anyway.
+- Swift naming conventions; `guard` / early returns over deep nesting.
+- Persisted shapes are contracts: `GenerationRecord`, asset-pack
+  manifests, and bundle formats change only with an explicit migration.
 
-2. Architecture & Swift Idioms
+## 3. Concurrency, Performance & Memory
 
-Respect platform and subsystem boundaries. Keep ML inference, mesh processing, and Director/ logic strictly decoupled from SwiftUI, SceneKit, and RealityKit. Keep platform-specific rendering and windowing inside macOS/ (primary), iOS/, and visionOS/.
+- UI state on `@MainActor`; **nothing slow runs on it** — model loads,
+  MLX inference, Vision/CoreImage prep, mesh export, downloads. Use
+  actors (runtime stores), `@concurrent`, or MLX's own off-main paths.
+- Structured concurrency; cancellation is a first-class outcome for every
+  long operation (generation, planning timeouts, downloads).
+- Deliberate exceptions are documented, not improvised: runtime stores
+  cache loaded models for process lifetime by design, and the named
+  `Task.sleep` uses in AGENTS.md (GPU foreground settle, Director
+  timeouts) are the only sanctioned sleeps.
+- Meshes and tensors are large: avoid copies, prefer in-place buffers,
+  and remember iOS/visionOS jetsam limits when adding caches.
+- Measure with Instruments before optimizing; record significant
+  trade-offs in the commit or wiki.
 
-Prefer value types and composition. Favor struct, enum, and focused protocols over class inheritance unless an Apple framework requires NSObject subclassing.
+## 4. Weights, Models & Provenance (Mesquette-specific)
 
-Keep files cohesive. Give each file a clear responsibility without forcing tiny helper types or subviews into separate files that create unnecessary project.pbxproj churn.
+- **Never ship weights in the app or the repo.** Weights come from pinned
+  Hugging Face revisions (or Apple-hosted asset packs in signed Release
+  builds), are SHA-256 verified against published checksums before use,
+  and are stamped for offline reuse. A pin bump is a reviewed change with
+  new digests, never a floating `main`.
+- **Parity before claims.** A runtime/backend is "working" only with
+  recorded evidence at its layer: component tensors → end-to-end mesh →
+  through-the-app generation. Bit-exact where the upstream allows it;
+  state tolerances where it doesn't.
+- **Licenses travel with conversions.** Converted weights keep upstream
+  terms (MIT for Shap-E/CLIP/TripoSR); update `THIRD_PARTY_NOTICES.md`
+  with every new model or dependency, after checking redistribution and
+  territory terms — not just code license.
+- Treat prompts, user images, and downloaded manifests as untrusted
+  input; verify before loading, fail closed.
 
-Follow Swift naming conventions. Use clear, descriptive names (UpperCamelCase for types/protocols, lowerCamelCase for properties/methods/cases) and guard / early returns to avoid deep nesting.
+## 5. Error Handling & Observability
 
-Preserve data compatibility. Maintain backward compatibility for persisted GenerationRecord data and AssetPacks/ schemas unless a breaking change is explicitly approved.
+- Failures are explicit and typed at boundaries (`DirectorError`,
+  `HFBundleError`, runtime load errors). No silent `try?` without a
+  comment saying why the value is disposable; no empty `catch`.
+- User-facing errors are short and safe; diagnostic context goes to logs.
+- Log with `os.Logger` (subsystem = bundle id): lifecycle events, loads,
+  downloads, exports, Director decisions. Hot loops stay quiet. Anything
+  containing user prompts or paths is `privacy: .private`. Never log
+  tokens or credentials.
 
-3. Concurrency, Performance & Memory
+## 6. Testing & Honest Verification
 
-Protect @MainActor. Isolate UI state updates to @MainActor and never block it with model loading, MLX inference, image background removal, or mesh export.
+Mesquette's verification ladder, weakest to strongest:
 
-Use structured concurrency. Handle Task cancellation cleanly for long-running generation and asset downloads. Avoid orphaned background tasks and never use Task.sleep to mask race conditions.
+1. **Build** — `xcodebuild` macOS must be warning-free at the source.
+2. **Unit tests** in `MesquetteTests/` for deterministic logic (planner,
+   layout, checksums, gating). Note: the target is visionOS-only and
+   currently cannot run (see AGENTS.md); tests are still written and
+   compile-checked conceptually against the code they pin.
+3. **Through-the-app evidence** — drive `ContentViewModel`/`AppModel`
+   headlessly against real weights and record concrete outputs (mesh
+   counts, topology, digests). A library-only pass is not an app pass.
+4. **UI by eye** — viewport, pin interaction, and first-launch flows are
+   verified in the running app by a human until UI automation exists.
 
-Respect device memory limits. Avoid unnecessary copies of mesh buffers, textures, and MLX tensors, and release GPU/ML resources promptly—especially for iOS and visionOS devices.
+Rules: reproduce before fixing; add regression coverage with the fix;
+never weaken a test to get green; and always report which rung each claim
+reached — **verified / not tested / blocked**, never fabricated.
 
-Measure before optimizing. Profile with Instruments before introducing complex optimizations, and document significant performance trade-offs.
+## 7. Security & Dependencies
 
-4. Error Handling & Observability
+- No hardcoded secrets; local `.env` files are gitignored and
+  `*.env.example` files are template-only.
+- Least-privilege entitlements; never disable App Sandbox to work around
+  a problem — find the entitlement or redesign.
+- New dependencies need a stated need plus license, maintenance, and
+  macOS/iOS/visionOS support review.
 
-Make failures explicit. Never silently swallow errors (try? without justification or empty catch blocks) or hide broken behavior behind silent fallbacks.
+## 8. Documentation & Repo Hygiene
 
-Use typed domain errors. Surface clear, user-safe errors at architectural boundaries (e.g., DirectorError) while preserving diagnostic context.
+- Document the *why*: invariants, coordinate-space and data-format
+  assumptions, concurrency guarantees. Skip comments restating code.
+- Knowledge graph sync is part of the change (AGENTS.md has the rule and
+  the command); subsystem behavior changes update `docs/wiki/` too.
+- Never commit `DerivedData/`, weights, packaged asset packs, or local
+  env files. Fix warnings at the source instead of suppressing them.
 
-Log intentionally. Use os.Logger for lifecycle events and failures (model loads, downloads, exports, Director compilation). Keep hot render/inference loops quiet and never log tokens, credentials, or sensitive user data.
+## 9. Significant Changes
 
-5. Testing & Debugging
+Before a major architectural or breaking change, document: problem &
+motivation, options considered, impact (platforms, memory/perf, security,
+compatibility), and rollout/rollback. A short section in the relevant
+wiki page or PR description is enough.
 
-Design for testability. Add or update deterministic unit tests in MesquetteTests/ for meaningful behavioral changes, covering expected paths, invalid input, boundary conditions, and regressions.
+## 10. Definition of Done
 
-Fix root causes. Reproduce the issue, gather evidence, fix the underlying defect, and add regression coverage. Never weaken assertions, delete failing tests, or add blind retries to make a build green.
-
-Be honest about coverage. When automated tests cannot run (e.g., hardware-only visionOS immersive behavior or current SDK blockers), state what was verified versus not tested.
-
-6. Security & Dependencies
-
-Validate untrusted input. Treat user prompts, imported images, and downloaded asset manifests as untrusted.
-
-Guard secrets and entitlements. Never hardcode tokens or commit local .env files. Maintain least privilege in Mesquette.entitlements and AssetDownloader.entitlements, and never disable App Sandbox to work around an issue.
-
-Minimize external dependencies. Prefer Apple system frameworks and existing packages. Before adding a SwiftPM dependency, evaluate security, maintenance, multi-platform support (macOS, iOS, visionOS), and licensing (update THIRD_PARTY_NOTICES.md).
-
-7. Documentation & Repo Hygiene
-
-Document the why. Add doc comments for public APIs, non-obvious invariants (coordinate-space conversions, concurrency guarantees, memory constraints), and trade-offs. Skip comments that merely restate the code.
-
-Keep architecture docs in sync. Update docs/knowledge-graph.{md,json} in the same change as Swift edits and verify with scripts/check-knowledge-graph.sh. Update README.md or subsystem docs when pipelines or contracts change.
-
-Keep commits clean. Never commit DerivedData/, downloaded model weights, or packaged asset packs. Fix compiler and Swift concurrency warnings at the source instead of suppressing them.
-
-8. Significant Architectural Changes
-
-Before introducing a major architectural change or breaking change, document:
-
-Problem & motivation — Why the current design is insufficient.
-
-Options considered — Simpler alternatives and why the proposed design wins.
-
-Impact — Effects on macOS, iOS, visionOS, memory/performance, security, and backward compatibility.
-
-Rollout & rollback — Migration needs and how to revert safely.
-
-9. Definition of Done
-
-A change is complete when:
-
-Requirements are met and all product invariants in AGENTS.md remain intact.
-
-Code is clean, warning-free, and appropriately documented.
-
-docs/knowledge-graph.{md,json} is updated and scripts/check-knowledge-graph.sh passes.
-
-Relevant tests are added/updated and all runnable build/test checks have been verified.
-
-Known limitations or unverified areas are explicitly disclosed.
+- Requirements met; AGENTS.md invariants intact.
+- Code clean and warning-free; knowledge graph updated and its check green.
+- Tests added/updated; the highest runnable rung of §6 actually ran.
+- Limitations and unverified areas stated plainly in the report.

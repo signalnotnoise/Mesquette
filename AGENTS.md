@@ -58,7 +58,7 @@ The guardrails below are the short form; the standards doc wins on detail.
 
 - **Minimal scope:** Make the smallest complete change that solves the task. Do not perform unrequested refactors or alter unrelated files.
 - **Swift idioms over rigid rules:** Prefer value types (`struct`, `enum`) and composition over inheritance. Group tightly coupled helper types or small subviews naturally instead of creating unnecessary `project.pbxproj` churn, and verify any new file is added to the right target(s).
-- **Concurrency & performance:** Isolate UI state to `@MainActor`. Never block `@MainActor` with model loading, MLX inference, background removal, or mesh export. Handle `Task` cancellation cleanly; never use `Task.sleep` to mask race conditions.
+- **Concurrency & performance:** Isolate UI state to `@MainActor`. Never block `@MainActor` with model loading, MLX inference, background removal, or mesh export. Handle `Task` cancellation cleanly; never use `Task.sleep` to mask race conditions. Documented exceptions: the 80 ms foreground settle in `MLXForegroundGPU.prepare` (Metal stream must exist before `@concurrent` submits) and the Director planning timeouts (25 s tag / 40 s extras).
 - **Errors & warnings:** Never silently swallow errors (`try?` without justification) or suppress compiler/concurrency warnings. Fix root causes at the source.
 - **Repo hygiene:** Never commit `DerivedData/`, downloaded model weights (`scripts/fetch-weights.sh`), packaged asset packs, or local `.env` files (`scripts/asset-pack-upload.env.example` is template-only).
 - **Honest reporting:** Distinguish between what was **verified**, **not tested**, and **blocked**. Never fabricate build or test results.
