@@ -11,8 +11,8 @@
   },
   "packages": [
     { "id": "mlx-swift", "kind": "remote", "url": "https://github.com/ml-explore/mlx-swift" },
-    { "id": "ShapERuntime", "kind": "submodule", "path": "Vendor/apple-mlx-foundations/shap_e/swift", "url": "https://github.com/signalnotnoise/apple-mlx-foundations", "pinned": "v0.1.0 018215715177943fe72cea8e540bc7b80dcb593f" },
-    { "id": "RuntimeWrapper", "kind": "submodule", "path": "Vendor/apple-mlx-foundations/runtime_wrapper", "url": "https://github.com/signalnotnoise/apple-mlx-foundations", "pinned": "v0.1.0 018215715177943fe72cea8e540bc7b80dcb593f" },
+    { "id": "ShapERuntime", "kind": "submodule", "path": "Vendor/apple-mlx-foundations/shap_e/swift", "url": "https://github.com/signalnotnoise/apple-mlx-foundations", "pinned": "3de822836cf7358125e028bf4d75818ed6dbaf7a" },
+    { "id": "RuntimeWrapper", "kind": "submodule", "path": "Vendor/apple-mlx-foundations/runtime_wrapper", "url": "https://github.com/signalnotnoise/apple-mlx-foundations", "pinned": "3de822836cf7358125e028bf4d75818ed6dbaf7a" },
     { "id": "RealityKitContent", "kind": "local", "path": "Packages/RealityKitContent" }
   ],
   "invariants": [

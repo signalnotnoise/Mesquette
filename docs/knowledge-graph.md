@@ -64,10 +64,10 @@ AssetPacks/                    shap-e-text (essential), shap-e-image (prefetch)
 runtime_bundle/                NOT a build input anymore. Asset-pack packaging workspace only (scripts/fetch-weights.sh), gitignored
 Packages/RealityKitContent     visionOS table scene
 MesquetteTests/            visionOS-only test target (xros)
-Vendor/apple-mlx-foundations/    git submodule (signalnotnoise/apple-mlx-foundations) pinned v0.1.0 `0182157`; shap_e/swift = local package ShapERuntime
+Vendor/apple-mlx-foundations/    git submodule (signalnotnoise/apple-mlx-foundations) pinned `3de8228` (post-v0.1.0 main); shap_e/swift = local package ShapERuntime
 ```
 
-External packages: `mlx-swift` 0.31.3 (GitHub), `swift-transformers` Hub ≥1.4.0 (GitHub, HF weights download), `RuntimeWrapper` + `TripoSRRuntime` (foundations submodule; TripoSR image backend via `ThreeDGenerationRuntime`), `ShapERuntime` (local `Vendor/apple-mlx-foundations/shap_e/swift`, submodule pinned to foundations v0.1.0). Never point the Xcode project at the sibling `../apple-mlx-foundations` checkout — that is the private pre-publication archive, not the public dependency.
+External packages: `mlx-swift` 0.31.3 (GitHub), `swift-transformers` Hub ≥1.4.0 (GitHub, HF weights download), `RuntimeWrapper` + `TripoSRRuntime` (foundations submodule; TripoSR image backend via `ThreeDGenerationRuntime`), `ShapERuntime` (local `Vendor/apple-mlx-foundations/shap_e/swift`, submodule pinned to foundations `3de8228`). Never point the Xcode project at the sibling `../apple-mlx-foundations` checkout — that is the private pre-publication archive, not the public dependency.
 
 ---
 

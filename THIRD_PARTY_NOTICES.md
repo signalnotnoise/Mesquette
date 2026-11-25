@@ -49,6 +49,6 @@ Copyright © 2019-2020 Apple Inc. Apache License 2.0.
 The Swift/MLX Shap-E inference runtime lives in
 [apple-mlx-foundations](https://github.com/signalnotnoise/apple-mlx-foundations)
 under `shap_e/swift`, MIT licensed by signalnotnoise, vendored here as a
-git submodule at `Vendor/apple-mlx-foundations` pinned to v0.1.0
-(`018215715177943fe72cea8e540bc7b80dcb593f`). It is a port of OpenAI's
+git submodule at `Vendor/apple-mlx-foundations` pinned to
+`3de822836cf7358125e028bf4d75818ed6dbaf7a` (post-v0.1.0 main). It is a port of OpenAI's
 reference implementation (see Shap-E above).

@@ -31,7 +31,7 @@ from `signalNotNoise/triposr-mlx`, checksum-verified).
 Mesquette depends on the `ShapERuntime` Swift package from
 [apple-mlx-foundations](https://github.com/signalnotnoise/apple-mlx-foundations),
 vendored as a git submodule at `Vendor/apple-mlx-foundations` and pinned
-to **v0.1.0** (`018215715177943fe72cea8e540bc7b80dcb593f`). Xcode
+to foundations **main** (`3de822836cf7358125e028bf4d75818ed6dbaf7a`, post-v0.1.0 incl. TripoSR finish + HTTPS submodule URLs). Xcode
 references it as a local package at
 `Vendor/apple-mlx-foundations/shap_e/swift`.
 
