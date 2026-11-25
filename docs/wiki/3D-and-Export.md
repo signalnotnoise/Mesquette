@@ -77,8 +77,8 @@ subsystem only realizes them. Topology: [`docs/knowledge-graph.md`](../knowledge
 - SceneKit/RealityKit work happens on the main actor via SwiftUI update
   cycles; `StudioCameraRig` math is `nonisolated` so tests/harnesses can
   call it anywhere.
-- Geometry buffers are built from tensor `Data` in place on macOS/iOS
-  (no per-vertex copy); the visionOS bake allocates ~3× expanded verts
+- Geometry buffers are built once in `SceneKitStudio.makeGeometry`
+  (shared macOS/iOS, tensor `Data` in place, no per-vertex copy); the visionOS bake allocates ~3× expanded verts
   plus texture — the memory ceiling for large meshes is visionOS.
 - `MeshExporter` is a `nonisolated` pure-data path (safe off-main), but
   it still materializes full `[Float]`/`[UInt32]` arrays; don't call it

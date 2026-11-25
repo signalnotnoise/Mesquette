@@ -240,7 +240,7 @@ Shap-E blobs are a **model prior** problem, not a Director bug, once prompts act
 
 | Platform | Renderer | Notes |
 |---|---|---|
-| macOS | SceneKit (`Mac3DPreviewView`, `SceneKitStudio`) | Pin click/drag; tumble orbit (look down); walk first-person; shading modes |
+| macOS | SceneKit (`Mac3DPreviewView`, `SceneKitStudio` incl. shared `makeGeometry`) | Pin click/drag; tumble orbit (look down); walk first-person; shading modes |
 | iPad / iPhone | SceneKit | Phone: full-canvas + bottom sheet |
 | visionOS | RealityKit (`ImmersiveStudio`, `ShapEMeshAdapter`) | Glass table ~1.25 m forward, 0.72 m high. Vertex colors baked per triangle |
 

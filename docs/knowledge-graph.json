@@ -50,7 +50,7 @@
     { "id": "TripoSRStore", "type": "runtime", "path": "Mesquette/TripoSRStore.swift", "summary": "Actor: builds ThreeDGenerationRuntime (.tripoSR) from verified weights; failed loads not cached." },
     { "id": "MeshExporter", "type": "export", "path": "Mesquette/MeshExporter.swift", "summary": "OBJ+MTL ZIP, USDZ, validatedFaceIndices." },
     { "id": "ShapEMeshAdapter", "type": "viewport", "path": "Mesquette/ShapEMeshAdapter.swift", "summary": "visionOS MeshResult to RealityKit; shares face validation." },
-    { "id": "SceneKitStudio", "type": "viewport", "path": "Mesquette/macOS/SceneKitStudio.swift", "summary": "Plant mesh at pin without rest-pose sit." },
+    { "id": "SceneKitStudio", "type": "viewport", "path": "Mesquette/macOS/SceneKitStudio.swift", "summary": "Plant mesh at pin without rest-pose sit; shared makeGeometry for macOS+iPad previews." },
     { "id": "StudioCamera", "type": "viewport", "path": "Mesquette/macOS/StudioCamera.swift", "summary": "Orbit tumble / top / walk. Not arcball." },
     { "id": "MacChatPanel", "type": "ui", "path": "Mesquette/macOS/MacChatPanelView.swift", "summary": "Create panel; Extra props slider; pinPlanNote." },
     { "id": "Mac3DPreview", "type": "ui", "path": "Mesquette/macOS/Mac3DPreviewView.swift", "summary": "SceneKit canvas, pin click/drag/retry." },
