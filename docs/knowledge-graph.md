@@ -63,7 +63,7 @@ AssetDownloader/               StoreDownloaderExtension (hosted weights)
 AssetPacks/                    shap-e-text (essential), shap-e-image (prefetch)
 runtime_bundle/                NOT a build input anymore. Asset-pack packaging workspace only (scripts/fetch-weights.sh), gitignored
 Packages/RealityKitContent     visionOS table scene
-MesquetteTests/            visionOS-only test target (xros)
+MesquetteTests/            unit tests (macOS + visionOS; run on macOS)
 Vendor/apple-mlx-foundations/    git submodule (signalnotnoise/apple-mlx-foundations) pinned `3de8228` (post-v0.1.0 main); shap_e/swift = local package ShapERuntime
 ```
 
@@ -250,7 +250,7 @@ Table axes: **+X right, +Z toward the user**, Y up. Pin Y is height above the ta
 
 ## 11. Tests and how to verify
 
-Test **target is visionOS-only** (`SUPPORTED_PLATFORMS = xros xrsimulator`, deployment 26.2). Compiling tests on the 27 SDK still hits `RuntimeAssetLocator` (`manifest` / `assetPack(withID:)` need visionOS 27 availability). **Verified compile path:**
+Test target runs on macOS via the shared scheme (`SUPPORTED_PLATFORMS = macosx xros xrsimulator`): `xcodebuild test -scheme Mesquette -destination 'platform=macOS,arch=arm64'` (101 tests). visionOS build-for-testing also compiles. **Verified compile path:**
 
 ```
 DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer \

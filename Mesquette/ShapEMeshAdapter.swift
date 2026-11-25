@@ -118,11 +118,9 @@ public struct ShapEMeshAdapter {
                     withName: "ShapEVertexColours",
                     options: options
                 )
-                logger.debug("Per-triangle colour texture \(baked.texWidth)×\(baked.texHeight) "
-                    + "for \(baked.triangleCount) tris (\(baked.positions.count) expanded verts)")
+                logger.debug("Per-triangle colour texture \(baked.texWidth)x\(baked.texHeight) for \(baked.triangleCount) tris (\(baked.positions.count) expanded verts)")
             } catch {
-                logger.error("TextureResource creation failed: \(error). "
-                    + "Falling back to uniform material.")
+                logger.error("TextureResource creation failed: \(error.localizedDescription, privacy: .public). Falling back to uniform material.")
                 let mesh = try buildMeshDescriptor(
                     positions: geometry.positions,
                     indices: geometry.indices,
@@ -193,8 +191,7 @@ public struct ShapEMeshAdapter {
             if vals.count == vertexCount * 4 {
                 colors = vals
             } else {
-                logger.error("Colour channel count mismatch – "
-                    + "RGBA \(vals.count) vs expected \(vertexCount * 4).")
+                logger.error("Colour channel count mismatch – RGBA \(vals.count) vs expected \(vertexCount * 4).")
             }
         }
 
@@ -452,13 +449,11 @@ public struct ShapEMeshAdapter {
         }
 
         guard positions.count <= lowLevelMesh.descriptor.vertexCapacity else {
-            logger.error("vertexCount \(positions.count) exceeds capacity "
-                + "\(lowLevelMesh.descriptor.vertexCapacity)")
+            logger.error("vertexCount \(positions.count) exceeds capacity \(lowLevelMesh.descriptor.vertexCapacity)")
             throw ShapEMeshAdapterError.capacityExceeded
         }
         guard indices.count <= lowLevelMesh.descriptor.indexCapacity else {
-            logger.error("indexCount \(indices.count) exceeds capacity "
-                + "\(lowLevelMesh.descriptor.indexCapacity)")
+            logger.error("indexCount \(indices.count) exceeds capacity \(lowLevelMesh.descriptor.indexCapacity)")
             throw ShapEMeshAdapterError.capacityExceeded
         }
 

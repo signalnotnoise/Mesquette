@@ -73,4 +73,4 @@ DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer \
 scripts/check-knowledge-graph.sh
 ```
 
-Test limitation: MesquetteTests are visionOS-only and currently fail to compile on the locator's visionOS 27 Background Assets APIs. Do not claim unit tests passed unless that blocker is resolved and tests actually ran; report this limitation explicitly.
+Tests: `xcodebuild test -scheme Mesquette -destination 'platform=macOS,arch=arm64'` runs the full suite on macOS via the shared scheme. The target still builds for visionOS; immersive behavior itself is verified manually on device.

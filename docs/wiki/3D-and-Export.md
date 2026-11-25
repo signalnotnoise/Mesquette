@@ -118,4 +118,4 @@ subsystem only realizes them. Topology: [`docs/knowledge-graph.md`](../knowledge
 - No automated coverage for: SceneKit node sync, the RealityKit bake,
   immersive staging, shading modes, or USDZ output. Those are verified
   manually in-app; macOS build is the only gate that runs today, and the
-  test target itself is visionOS-only/blocked (see AGENTS Verify).
+  unit tests run on macOS (see AGENTS Verify).

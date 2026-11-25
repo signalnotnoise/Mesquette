@@ -79,8 +79,8 @@ Mesquette's verification ladder, weakest to strongest:
 1. **Build** — `xcodebuild` macOS must be warning-free at the source.
 2. **Unit tests** in `MesquetteTests/` for deterministic logic (planner,
    layout, checksums, gating). Note: the target is visionOS-only and
-   currently cannot run (see AGENTS.md); tests are still written and
-   compile-checked conceptually against the code they pin.
+   run on macOS via the shared scheme; immersive/hardware behavior
+   remains manual-verification territory.
 3. **Through-the-app evidence** — drive `ContentViewModel`/`AppModel`
    headlessly against real weights and record concrete outputs (mesh
    counts, topology, digests). A library-only pass is not an app pass.

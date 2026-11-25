@@ -133,7 +133,7 @@
   },
   "verify": {
     "macBuild": "DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer xcodebuild -scheme Mesquette -destination 'platform=macOS,arch=arm64' build",
-    "tests": "MesquetteTests is visionOS-only; RuntimeAssetLocator availability currently blocks xrsimulator compile on 26.2 deployment vs 27 APIs.",
+    "tests": "MesquetteTests run on macOS via the shared Mesquette scheme (101 tests); visionOS build-for-testing compiles.",
     "doNot": "Do not score Shap-E mesh quality in CI."
   }
 }
