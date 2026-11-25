@@ -6,6 +6,7 @@ import Observation
 
 @Observable
 @MainActor
+/// Polls `DirectorAvailabilityChecker` into view-ready availability state.
 final class DirectorAvailabilityViewModel {
     func refresh(appModel: AppModel) {
         appModel.directorAvailability = DirectorAvailabilityChecker.current()

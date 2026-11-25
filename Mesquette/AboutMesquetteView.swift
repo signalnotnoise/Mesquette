@@ -3,6 +3,7 @@
 
 import SwiftUI
 
+/// About sheet: identity, credits, and model/license attribution.
 struct AboutMesquetteView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(AppModel.self) private var appModel

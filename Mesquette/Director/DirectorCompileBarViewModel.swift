@@ -6,6 +6,8 @@ import Observation
 
 @Observable
 @MainActor
+/// State machine behind the Compile bar (intent → compilation), including
+/// stale-result protection via `AppModel.compileGeneration`.
 final class DirectorCompileBarViewModel {
     private let client: any DirectorServicing
 

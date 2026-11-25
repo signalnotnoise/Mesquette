@@ -6,6 +6,8 @@ import simd
 import ShapERuntime
 
 @Observable
+/// Mirrors `AppModel` generation records into the immersive RealityKit scene.
+/// Sync is coalesced: concurrent callers set `needsResync` instead of dropping updates.
 class ImmersiveViewModel {
     private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.visionarydevops.Mesquette", category: "immersive")
     

@@ -3,6 +3,8 @@
 
 import Foundation
 
+/// User-safe Director failures. Every Foundation Models error is mapped into
+/// one of these before it reaches the UI.
 nonisolated enum DirectorError: LocalizedError, Equatable, Sendable {
     case unavailable(String)
     case emptyIntent

@@ -3,7 +3,7 @@
 **For agents.** Read this before changing Director, pins, layout, Shap-E loading, or export.  
 **Product name:** Mesquette (`AppIdentity.name`). Xcode project/folder is `Mesquette`.  
 **Bundle id:** `com.visionarydevops.Mesquette`  
-**Generated:** 2026-11-17  
+**Generated:** 2026-11-25  
 **Machine copy:** [`knowledge-graph.json`](knowledge-graph.json)  
 **Keep in sync:** any Swift change in this repo must update this file and the JSON in the same turn. `scripts/check-knowledge-graph.sh` enforces it.
 

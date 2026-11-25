@@ -11,6 +11,8 @@ import AppKit
 import UIKit
 #endif
 
+/// Shared SceneKit studio for macOS+iOS: scene install (floor/lights/camera),
+/// table planting with gravity pivot, shading modes, and camera rig application.
 enum SceneKitStudio {
 
     /// Build SceneKit geometry from a runtime mesh. Shared by the macOS and

@@ -11,6 +11,7 @@ import FoundationModels
 #endif
 
 @MainActor
+/// The Director surface `ContentViewModel` depends on; one async call per user intent.
 protocol DirectorServicing {
     func compile(intent: String) async throws -> CompiledPrompt
     func inventPreset(seed: String, avoidingTitles: [String]) async throws -> InventedPreset
@@ -25,6 +26,8 @@ protocol DirectorServicing {
     func tagSceneCast(from scene: String) async throws -> DirectorStaging.TaggedSceneCast
 }
 
+/// Foundation Models implementation. Every method checks availability first and
+/// maps failures to `DirectorError`; sessions are created per call.
 struct DirectorClient: DirectorServicing {
     func compile(intent: String) async throws -> CompiledPrompt {
         let trimmed = intent.trimmingCharacters(in: .whitespacesAndNewlines)

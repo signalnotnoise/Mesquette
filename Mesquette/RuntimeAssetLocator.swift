@@ -13,6 +13,8 @@ import System
 import BackgroundAssets
 #endif
 
+/// Single authority for where Shap-E weights come from, in order: bundled copy,
+/// Background Assets (team-gated), verified HF cache. Callers never construct paths.
 enum RuntimeAssetLocator {
     static let textPackID = "shap-e-text"
     static let imagePackID = "shap-e-image"

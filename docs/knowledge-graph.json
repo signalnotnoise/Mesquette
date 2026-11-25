@@ -1,6 +1,6 @@
 {
   "schema": "mesquette.knowledge-graph.v1",
-  "generated": "2026-11-17",
+  "generated": "2026-11-25",
   "branch": "feature/visionOS",
   "product": {
     "name": "Mesquette",

@@ -38,6 +38,8 @@ private struct AppliedTablePose: Equatable {
 
 // MARK: - View
 
+/// iPad SceneKit viewport host (scene sync, pin markers); geometry comes from
+/// `SceneKitStudio.makeGeometry` so it matches the Mac preview exactly.
 struct IPad3DPreviewView: UIViewRepresentable {
 
     let records:      [GenerationRecord]

@@ -3,6 +3,8 @@
 
 import Foundation
 
+/// Verbatim system prompts per Director job. Compile, invent, tagging, and pin
+/// planning intentionally use separate texts — editing one does not affect the others.
 nonisolated enum DirectorSystemPrompt {
     static let text = """
     You are Mesquette Director: you turn a scene description into Shap-E objects.

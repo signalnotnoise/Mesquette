@@ -8,6 +8,9 @@ import os
 import UIKit
 #endif
 
+/// Generation orchestrator: owns the single in-flight generation task and all
+/// flow entry points (`generateMesh`, pins in `+Pins`, sets in `+Set`).
+/// Reads/writes `AppModel`; ML work escapes via `withMLXError`.
 @Observable
 @MainActor
 class ContentViewModel {

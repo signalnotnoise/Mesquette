@@ -3,6 +3,8 @@
 
 import Foundation
 
+/// Applies/reverts compilations and invented presets onto `AppModel`, and stamps
+/// generations that still match a compilation. Pure state edits, no async work.
 enum DirectorSession {
     /// Drop an invented brief into the prompt and pin it at the top of For you.
     @discardableResult

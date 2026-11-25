@@ -9,6 +9,8 @@ nonisolated enum PinFillState: String, Equatable, Sendable {
     case filled
 }
 
+/// A user-clicked table point in meters (+X right, Y height, +Z toward user).
+/// `y` is clamped to `0...maxHeight`; `recordID` is the two-sided pin binding.
 nonisolated struct PlacementPin: Identifiable, Equatable, Sendable {
     var id: UUID
     /// Right on the table, meters.

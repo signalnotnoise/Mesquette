@@ -37,6 +37,9 @@ public enum ShapEMeshAdapterError: Error {
     case capacityExceeded
 }
 
+/// Converts a `MeshResult` into RealityKit geometry for visionOS, baking
+/// vertex colors per-triangle into a texture (RealityKit has no vertex-color
+/// channel standard materials will shade). See the file header for details.
 public struct ShapEMeshAdapter {
     private static let logger = Logger(
         subsystem: Bundle.main.bundleIdentifier ?? "com.visionarydevops.Mesquette",

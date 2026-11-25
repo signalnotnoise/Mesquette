@@ -3,6 +3,9 @@
 
 import Foundation
 
+/// Deterministic scene splitting and prompt hygiene: cast extraction, identity
+/// keys, height assignment, and named-object pin jobs. The LLM never runs here;
+/// this is the fallback (and referee) when Foundation Models output is absent or invalid.
 nonisolated enum DirectorStaging {
 
     private static let poisonPhrases = ["highly detailed"]
