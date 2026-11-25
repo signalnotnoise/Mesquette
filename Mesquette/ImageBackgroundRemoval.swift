@@ -17,10 +17,19 @@ public struct ImageBackgroundRemoval {
     
     
     // MARK: - Public APIs
+
+    /// Vision segmentation + CoreImage compositing are thread-safe but
+    /// synchronous and slow; public entry points are `@concurrent` so a
+    /// caller on the main actor never blocks on `handler.perform`.
     /// Generates a mask for the foreground object and composites it over a white background.
     /// Returns a new CGImage with the background stripped out.
     /// Platform-agnostic entry that works with a CGImage and orientation.
+    @concurrent
     public static func removeBackground(from cgImage: CGImage, orientation: CGImagePropertyOrientation = .up) async throws -> CGImage? {
+        try removeBackgroundSync(from: cgImage, orientation: orientation)
+    }
+
+    nonisolated private static func removeBackgroundSync(from cgImage: CGImage, orientation: CGImagePropertyOrientation) throws -> CGImage? {
         let request = VNGenerateForegroundInstanceMaskRequest()
         let handler = VNImageRequestHandler(cgImage: cgImage, orientation: orientation, options: [:])
         try handler.perform([request])
@@ -58,11 +67,21 @@ public struct ImageBackgroundRemoval {
     /// Returns an alpha-preserving image; the TripoSR runtime composites it
     /// over gray itself. (The white-composited `removeBackground` above is
     /// Shap-E tuned and must not feed TripoSR: the white becomes geometry.)
+    /// Runs off the caller's actor (see `removeBackground`).
+    @concurrent
     public static func foregroundCutout(
         from cgImage: CGImage,
         ratio: CGFloat = 0.85,
         orientation: CGImagePropertyOrientation = .up
     ) async throws -> CGImage? {
+        try foregroundCutoutSync(from: cgImage, ratio: ratio, orientation: orientation)
+    }
+
+    nonisolated private static func foregroundCutoutSync(
+        from cgImage: CGImage,
+        ratio: CGFloat,
+        orientation: CGImagePropertyOrientation
+    ) throws -> CGImage? {
         let request = VNGenerateForegroundInstanceMaskRequest()
         let handler = VNImageRequestHandler(cgImage: cgImage, orientation: orientation, options: [:])
         try handler.perform([request])
@@ -102,7 +121,7 @@ public struct ImageBackgroundRemoval {
     }
 
     /// Row-major top-first alpha bounds. Pure helper (unit-tested).
-    public static func alphaBounds(data: [UInt8], width: Int, height: Int, threshold: UInt8) -> CGRect? {
+    nonisolated public static func alphaBounds(data: [UInt8], width: Int, height: Int, threshold: UInt8) -> CGRect? {
         guard width > 0, height > 0, data.count >= width * height else { return nil }
         var minX = width, minY = height, maxX = -1, maxY = -1
         for y in 0..<height {
@@ -116,12 +135,12 @@ public struct ImageBackgroundRemoval {
     }
 
     /// Square canvas side so the foreground's long edge fills `ratio`.
-    public static func squareCanvasSide(foregroundWidth w: Int, height h: Int, ratio: CGFloat) -> Int {
+    nonisolated public static func squareCanvasSide(foregroundWidth w: Int, height h: Int, ratio: CGFloat) -> Int {
         guard w > 0, h > 0, ratio > 0 else { return max(w, h, 1) }
         return Int((CGFloat(max(w, h)) / ratio).rounded())
     }
 
-    private static func maskBounds(of mask: CVPixelBuffer) -> CGRect? {
+    nonisolated private static func maskBounds(of mask: CVPixelBuffer) -> CGRect? {
         CVPixelBufferLockBaseAddress(mask, .readOnly)
         defer { CVPixelBufferUnlockBaseAddress(mask, .readOnly) }
         guard let base = CVPixelBufferGetBaseAddress(mask) else { return nil }

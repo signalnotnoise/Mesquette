@@ -53,6 +53,9 @@ A pre-commit hook runs the same check (`scripts/install-git-hooks.sh` once per c
 
 ## Engineering Guardrails
 
+Baseline bar: [`docs/engineering_standards.md`](docs/engineering_standards.md).
+The guardrails below are the short form; the standards doc wins on detail.
+
 - **Minimal scope:** Make the smallest complete change that solves the task. Do not perform unrequested refactors or alter unrelated files.
 - **Swift idioms over rigid rules:** Prefer value types (`struct`, `enum`) and composition over inheritance. Group tightly coupled helper types or small subviews naturally instead of creating unnecessary `project.pbxproj` churn, and verify any new file is added to the right target(s).
 - **Concurrency & performance:** Isolate UI state to `@MainActor`. Never block `@MainActor` with model loading, MLX inference, background removal, or mesh export. Handle `Task` cancellation cleanly; never use `Task.sleep` to mask race conditions.
