@@ -1,4 +1,5 @@
 import Foundation
+import os
 import Vision
 import CoreImage
 import CoreImage.CIFilterBuiltins
@@ -12,6 +13,8 @@ import AppKit
 #endif
 
 public struct ImageBackgroundRemoval {
+    nonisolated private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.visionarydevops.Mesquette", category: "image")
+
     
     
     
@@ -35,7 +38,7 @@ public struct ImageBackgroundRemoval {
         try handler.perform([request])
         
         guard let result = request.results?.first else {
-            print("failed to generate foreground mask")
+            logger.error("failed to generate foreground mask")
             return nil
         }
         

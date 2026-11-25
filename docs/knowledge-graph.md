@@ -230,6 +230,7 @@ Do not silently treat this as the pin path. Rewriting only `DirectorSystemPrompt
 | Preview | `RuntimeLaunchContext.isXcodePreview` skips MLX (PreviewShell abort) |
 | Export | USDZ as-is. OBJ writes `.obj`+`.mtl`, share/save a **ZIP** of both |
 | Indices | `MeshExporter.validatedFaceIndices` shared with `ShapEMeshAdapter` (visionOS). No trapping `UInt32(v)` |
+| Logging | `os.Logger` only (categories: `place`, `image`, `generate`, `mesh-adapter`, `immersive`); no `print` in app sources, prompt fragments `.private` |
 
 Shap-E blobs are a **model prior** problem, not a Director bug, once prompts actually name the object.
 

@@ -3,6 +3,7 @@ import RealityKit
 import RuntimeWrapper
 import ShapERuntime
 import MLX
+import os
 #if canImport(UIKit)
 import UIKit
 #endif
@@ -504,7 +505,8 @@ class ContentViewModel {
                     status: .failed(ShapERuntimeError.gpuNotForeground.localizedDescription)
                 )
             } catch {
-                print("Failed to generate: \(error)")
+                Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.visionarydevops.Mesquette", category: "generate")
+                    .error("Failed to generate: \(error.localizedDescription, privacy: .public)")
                 appModel.isGenerating = false
                 appModel.progress = 0.0
                 appModel.progressPhaseLabel = ""

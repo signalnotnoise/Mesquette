@@ -4,6 +4,7 @@
 #if os(iOS)
 import SwiftUI
 import PhotosUI
+import os
 
 /// Right-hand chat panel for iPad: history of prompts + parameter controls + input bar.
 struct IPadChatPanelView: View {
@@ -217,10 +218,10 @@ struct IPadChatPanelView: View {
                             if let stripped = try await ImageBackgroundRemoval.removeBackground(from: cgImage) {
                                 finalImg = UIImage(cgImage: stripped)
                             } else {
-                                print("Vision succeeded but returned nil mask.")
+                                Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.visionarydevops.Mesquette", category: "image").error("Vision succeeded but returned nil mask.")
                             }
                         } catch {
-                            print("Background removal failed with error: \(error)")
+                            Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.visionarydevops.Mesquette", category: "image").error("Background removal failed: \(error.localizedDescription, privacy: .public)")
                         }
                     }
                     await MainActor.run {
