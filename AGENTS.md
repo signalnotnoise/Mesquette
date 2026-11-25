@@ -4,6 +4,13 @@
 - **Read first:** [`docs/knowledge-graph.md`](docs/knowledge-graph.md)
 - **Machine graph:** [`docs/knowledge-graph.json`](docs/knowledge-graph.json)
 
+## Subsystem Wiki
+
+- [`docs/wiki/Director.md`](docs/wiki/Director.md) — planning, pins, compile
+- [`docs/wiki/Architecture.md`](docs/wiki/Architecture.md) — state, flows, shells
+- [`docs/wiki/ML-and-Assets.md`](docs/wiki/ML-and-Assets.md) — runtimes, weights, image prep
+- [`docs/wiki/3D-and-Export.md`](docs/wiki/3D-and-Export.md) — viewport, camera, export
+
 ## Knowledge Graph (Mandatory)
 
 The graph is part of the change, not a follow-up. After **any** Swift edit under `Mesquette/`, `AssetDownloader/`, or `MesquetteTests/`:
