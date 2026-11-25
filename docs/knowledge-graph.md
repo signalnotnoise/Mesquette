@@ -292,7 +292,7 @@ Do **not** add mesh-quality CI. Planner fixtures (titles, pinIDs, prompts) only.
 
 ```
 AppModel.swift
-ContentViewViewModel.swift
+ContentViewViewModel.swift (+Planning/+Progress/+Pins/+Set extensions)
 Director/DirectorStaging.swift
 Director/DirectorClient.swift
 Director/DirectorLayoutEngine.swift
