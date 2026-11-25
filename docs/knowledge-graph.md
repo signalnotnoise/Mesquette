@@ -309,6 +309,7 @@ macOS/MacContentView.swift
 macOS/MacChatPanelView.swift
 macOS/Mac3DPreviewView.swift
 macOS/SceneKitStudio.swift
+macOS/Mac3DPreviewCoordinator.swift
 macOS/StudioCamera.swift
 RuntimeAssetLocator.swift
 ```
