@@ -115,23 +115,25 @@ actor ShapERuntimeStore {
 
     /// Wait until the first load attempt finishes. Errors are swallowed so
     /// launch UI can dismiss even if the bundle is missing.
-    func waitUntilLoadFinishes() async {
+    func waitUntilLoadFinishes(progress: (@Sendable (Double) -> Void)? = nil) async {
         guard !RuntimeLaunchContext.isXcodePreview else { return }
         do {
-            _ = try await runtime()
+            _ = try await runtime(progress: progress)
         } catch {
             // Splash still proceeds; Generate reports the real failure.
         }
     }
 
-    func runtime() async throws -> ShapERuntime {
+    /// `progress` (0...1 weights-download fraction) is honored only by the
+    /// caller that starts the load; later waiters share the same task.
+    func runtime(progress: (@Sendable (Double) -> Void)? = nil) async throws -> ShapERuntime {
         if RuntimeLaunchContext.isXcodePreview {
             throw ShapERuntimeLoadError.unavailableInPreviews
         }
         if let runtime {
             return runtime
         }
-        let task = ensureLoadTask()
+        let task = ensureLoadTask(progress: progress)
         let epoch = loadEpoch
         do {
             let loaded = try await task.value
@@ -146,7 +148,7 @@ actor ShapERuntimeStore {
         }
     }
 
-    private func ensureLoadTask() -> Task<ShapERuntime, Error> {
+    private func ensureLoadTask(progress: (@Sendable (Double) -> Void)? = nil) -> Task<ShapERuntime, Error> {
         if let loadTask {
             return loadTask
         }
@@ -155,7 +157,7 @@ actor ShapERuntimeStore {
             // Creating the MLX GPU stream during launch (app still inactive)
             // makes later Generate commit buffers that IOGPU rejects.
             await MLXForegroundGPU.prepare()
-            return try await Self.loadRuntime()
+            return try await Self.loadRuntime(progress: progress)
         }
         loadTask = task
         return task
@@ -166,10 +168,10 @@ actor ShapERuntimeStore {
         _ = try await RuntimeAssetLocator.resolvedModelBundleURLIncludingImage()
     }
 
-    private static func loadRuntime() async throws -> ShapERuntime {
+    private static func loadRuntime(progress: (@Sendable (Double) -> Void)?) async throws -> ShapERuntime {
         applyDeviceCachePolicy()
         do {
-            let modelURL = try await RuntimeAssetLocator.resolvedModelBundleURL()
+            let modelURL = try await RuntimeAssetLocator.resolvedModelBundleURL(progress: progress)
             // BPE vocab ships as an app resource; the Hugging Face snapshot
             // also carries it at the bundle root for builds without one.
             let bpeURL = Bundle.main.url(forResource: "bpe_simple_vocab_16e6", withExtension: "txt.gz")

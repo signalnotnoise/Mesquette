@@ -15,8 +15,6 @@
 		933ABE372F8DA9CB002518F6 /* MLXNN in Frameworks */ = {isa = PBXBuildFile; productRef = 933ABE362F8DA9CB002518F6 /* MLXNN */; };
 		933ABE3A2F8DA9F7002518F6 /* ShapERuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 933ABE392F8DA9F7002518F6 /* ShapERuntime */; };
 		93A4707A2F9921FC00662A91 /* bpe_simple_vocab_16e6.txt.gz in Resources */ = {isa = PBXBuildFile; fileRef = 93A470792F9921FC00662A91 /* bpe_simple_vocab_16e6.txt.gz */; };
-		A7F00D132FA2CB950050C230 /* Hub in Frameworks */ = {isa = PBXBuildFile; productRef = A7F00D122FA2CB950050C230 /* Hub */; };
-		B7F00D132FA2CB950050C230 /* RuntimeWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = B7F00D122FA2CB950050C230 /* RuntimeWrapper */; };
 		B0A5E70A2F8DA96D002518F6 /* AssetDownloader.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B0A5E7012F8DA96D002518F6 /* AssetDownloader.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -106,7 +104,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B7F00D132FA2CB950050C230 /* RuntimeWrapper in Frameworks */,
-				A7F00D132FA2CB950050C230 /* Hub in Frameworks */,
 				933ABE3A2F8DA9F7002518F6 /* ShapERuntime in Frameworks */,
 				933ABE372F8DA9CB002518F6 /* MLXNN in Frameworks */,
 				933ABE352F8DA9CB002518F6 /* MLXLinalg in Frameworks */,
@@ -193,7 +190,6 @@
 				933ABE342F8DA9CB002518F6 /* MLXLinalg */,
 				933ABE362F8DA9CB002518F6 /* MLXNN */,
 				933ABE392F8DA9F7002518F6 /* ShapERuntime */,
-				A7F00D122FA2CB950050C230 /* Hub */,
 				B7F00D122FA2CB950050C230 /* RuntimeWrapper */,
 			);
 			productName = Mesquette;
@@ -278,7 +274,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				933ABE2D2F8DA9CB002518F6 /* XCRemoteSwiftPackageReference "mlx-swift" */,
-				A7F00D112FA2CB950050C230 /* XCRemoteSwiftPackageReference "swift-transformers" */,
 				933ABE382F8DA9F7002518F6 /* XCLocalSwiftPackageReference "Vendor/apple-mlx-foundations/shap_e/swift" */,
 				B7F00D112FA2CB950050C230 /* XCLocalSwiftPackageReference "Vendor/apple-mlx-foundations/runtime_wrapper" */,
 			);
@@ -790,14 +785,6 @@
 				minimumVersion = 0.31.3;
 			};
 		};
-		A7F00D112FA2CB950050C230 /* XCRemoteSwiftPackageReference "swift-transformers" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/huggingface/swift-transformers";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.4.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -834,11 +821,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 933ABE382F8DA9F7002518F6 /* XCLocalSwiftPackageReference "Vendor/apple-mlx-foundations/shap_e/swift" */;
 			productName = ShapERuntime;
-		};
-		A7F00D122FA2CB950050C230 /* Hub */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A7F00D112FA2CB950050C230 /* XCRemoteSwiftPackageReference "swift-transformers" */;
-			productName = Hub;
 		};
 		B7F00D122FA2CB950050C230 /* RuntimeWrapper */ = {
 			isa = XCSwiftPackageProductDependency;

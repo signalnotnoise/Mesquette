@@ -33,13 +33,13 @@ enum RuntimeAssetLocator {
     }
 
     /// Directory ShapERuntime can treat as `modelBundleURL`.
-    static func resolvedModelBundleURL() async throws -> URL {
-        try await resolve(scope: .text)
+    static func resolvedModelBundleURL(progress: (@Sendable (Double) -> Void)? = nil) async throws -> URL {
+        try await resolve(scope: .text, progress: progress)
     }
 
     /// Call before image-to-3D so `clip_vision` / `image300m` are on disk.
-    static func resolvedModelBundleURLIncludingImage() async throws -> URL {
-        try await resolve(scope: .full)
+    static func resolvedModelBundleURLIncludingImage(progress: (@Sendable (Double) -> Void)? = nil) async throws -> URL {
+        try await resolve(scope: .full, progress: progress)
     }
 
     /// Background Assets *traps* (`Fatal error: The process lacks a team
@@ -80,7 +80,7 @@ enum RuntimeAssetLocator {
     }
 #endif
 
-    private static func resolve(scope: HFBundleScope) async throws -> URL {
+    private static func resolve(scope: HFBundleScope, progress: (@Sendable (Double) -> Void)?) async throws -> URL {
         if let bundled = bundledRuntimeURL() { return bundled }
         if hasTeamIdentifier {
             do {
@@ -91,7 +91,7 @@ enum RuntimeAssetLocator {
                 // Packs unavailable/downloading failed: fall through to HF.
             }
         }
-        return try await HFBundleDownloader.resolveBundle(scope: scope)
+        return try await HFBundleDownloader.resolveBundle(scope: scope, progress: progress)
     }
 
 #if canImport(BackgroundAssets)

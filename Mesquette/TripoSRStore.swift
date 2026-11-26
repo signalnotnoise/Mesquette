@@ -13,7 +13,7 @@ actor TripoSRStore {
     private var loadTask: Task<ThreeDGenerationRuntime, Error>?
     private var loadEpoch: UInt64 = 0
 
-    func tripoRuntime() async throws -> ThreeDGenerationRuntime {
+    func tripoRuntime(progress: (@Sendable (Double) -> Void)? = nil) async throws -> ThreeDGenerationRuntime {
         if RuntimeLaunchContext.isXcodePreview {
             throw ShapERuntimeLoadError.unavailableInPreviews
         }
@@ -25,7 +25,7 @@ actor TripoSRStore {
             loadEpoch &+= 1
             task = Task.detached(priority: .userInitiated) {
                 await MLXForegroundGPU.prepare()
-                let weightsURL = try await HFBundleDownloader.resolveTripoSRWeights()
+                let weightsURL = try await HFBundleDownloader.resolveTripoSRWeights(progress: progress)
                 return try ThreeDGenerationRuntime(
                     configuration: .tripoSR(weightsURL: weightsURL)
                 )

@@ -47,9 +47,10 @@ upstream runtime behavior belongs to apple-mlx-foundations, not this repo.
 - **BPE vocab is special**: `bpe_simple_vocab_16e6.txt.gz` ships as an app
   resource (committed, 1.3 MB) because the BA packs don't carry it; the
   HF snapshot root copy is only a fallback for resource-less builds.
-- **Downloads are sequential per file today** (`HubApi.snapshot` loops
-  files). Bundle = ~1,100 small tensors, so first launch is minutes, not
-  a bug. Any parallel downloader must keep pin + verify + stamp semantics.
+- **Downloads are parallel per file** (12 workers over the ~1,100 small
+  tensors, byte-accurate progress; cold first launch ≈1 min on a fast link,
+  was ~7 min sequential). Any downloader change must keep pin + verify +
+  stamp semantics, including skip-if-digest-matches resume behavior.
 
 ## Key Design Decisions
 

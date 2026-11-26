@@ -51,6 +51,7 @@ struct SplashView: View {
     @State private var idleTilt = 0.0
     @State private var showPreparing = false
     @State private var preparingLabel = "Preparing Engine…"
+    @State private var downloadFraction: Double = 0
     @State private var weightsReady = false
     @State private var skipRequested = false
     @State private var didFinish = false
@@ -146,10 +147,24 @@ struct SplashView: View {
                         .accessibilityAddTraits(.isHeader)
 
                     if showPreparing {
-                        ProgressView()
-                            .tint(copper)
-                            .padding(.top, 18)
-                            .transition(.opacity)
+                        VStack(spacing: 8) {
+                            if downloadFraction > 0 && downloadFraction < 1 {
+                                ProgressView(value: downloadFraction)
+                                    .tint(copper)
+                                    .frame(width: 220)
+                                Text("Downloading model… \(Int(downloadFraction * 100))%")
+                                    .font(.caption)
+                                    .foregroundStyle(copper.opacity(0.9))
+                            } else {
+                                ProgressView()
+                                    .tint(copper)
+                                Text(preparingLabel)
+                                    .font(.caption)
+                                    .foregroundStyle(copper.opacity(0.9))
+                            }
+                        }
+                        .padding(.top, 18)
+                        .transition(.opacity)
                     }
 
                     Spacer()
@@ -194,7 +209,12 @@ struct SplashView: View {
         await playIntro()
 
         let load = Task {
-            await ShapERuntimeStore.shared.waitUntilLoadFinishes()
+            await ShapERuntimeStore.shared.waitUntilLoadFinishes { fraction in
+                Task { @MainActor in
+                    downloadFraction = fraction
+                    if fraction > 0 { showPreparing = true }
+                }
+            }
         }
         let hint = Task { @MainActor in
             do {
