@@ -67,7 +67,7 @@ MesquetteTests/            unit tests (macOS + visionOS; run on macOS)
 Vendor/apple-mlx-foundations/    git submodule (signalnotnoise/apple-mlx-foundations) pinned `3de8228` (post-v0.1.0 main); shap_e/swift = local package ShapERuntime
 ```
 
-External packages: `mlx-swift` 0.31.3 (GitHub), `swift-transformers` Hub ≥1.4.0 (GitHub, HF weights download), `RuntimeWrapper` + `TripoSRRuntime` (foundations submodule; TripoSR image backend via `ThreeDGenerationRuntime`), `ShapERuntime` (local `Vendor/apple-mlx-foundations/shap_e/swift`, submodule pinned to foundations `3de8228`). Never point the Xcode project at the sibling `../apple-mlx-foundations` checkout — that is the private pre-publication archive, not the public dependency.
+External packages: `mlx-swift` 0.31.3 (GitHub), `RuntimeWrapper` + `TripoSRRuntime` (foundations submodule; TripoSR image backend via `ThreeDGenerationRuntime`), `ShapERuntime` (local `Vendor/apple-mlx-foundations/shap_e/swift`, submodule pinned to foundations `3de8228`). Never point the Xcode project at the sibling `../apple-mlx-foundations` checkout — that is the private pre-publication archive, not the public dependency.
 
 ---
 
@@ -260,7 +260,7 @@ DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer \
 | Test file | Covers |
 |---|---|
 | `PinFillTests` | Bind/unbind, Yorkshire cast, 6 vs 21 leftover, identity, lantern height, amber bottle, pinIndex extras, extras slider max 15 |
-| `HFBundleDownloaderTests` | Pinned revisions (Shap-E + TripoSR), scope globs, checksum parse/filter, fail-closed verify, model picker forces image for TripoSR |
+| `HFBundleDownloaderTests` | Pinned revisions (Shap-E + TripoSR), scope globs, checksum parse/filter, coverage gate, fail-closed verify, model picker forces image for TripoSR |
 | `ImageBackgroundRemovalTests` | TripoSR foreground prep: alpha bounds, square-canvas 0.85 ratio |
 | `DirectorLayoutEngineTests` | `packRecords` by pinID, locked pins, fills expand (non-pin path only) |
 | `DirectorSessionTests` | stamp does not leak scale/material onto unmatched prompts |

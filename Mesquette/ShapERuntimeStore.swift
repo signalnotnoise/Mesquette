@@ -96,9 +96,22 @@ actor ShapERuntimeStore {
 
     private var runtime: ShapERuntime?
     private var loadTask: Task<ShapERuntime, Error>?
+    /// Latest weights-download fraction of the in-flight (or last) load.
+    /// Observers registered via `runtime(progress:)` are replayed this value
+    /// immediately, so a waiter that arrives after `preload()` still sees
+    /// current progress instead of nothing.
+    private var loadProgress: Double = 0
+    private var progressObservers: [UUID: @Sendable (Double) -> Void] = [:]
     /// Bumped each time a new load task is created so a failed waiter cannot
     /// nil out a newer attempt that started after the failure.
     private var loadEpoch: UInt64 = 0
+
+    private func publishProgress(_ fraction: Double) {
+        // Ticks arrive via one Task hop per update and may reorder slightly;
+        // observers must still see a monotonic sequence.
+        loadProgress = max(loadProgress, fraction)
+        for observer in progressObservers.values { observer(loadProgress) }
+    }
 
     /// Kick off a background load. Safe to call more than once.
     func preload() {
@@ -115,16 +128,20 @@ actor ShapERuntimeStore {
 
     /// Wait until the first load attempt finishes. Errors are swallowed so
     /// launch UI can dismiss even if the bundle is missing.
-    func waitUntilLoadFinishes() async {
+    func waitUntilLoadFinishes(progress: (@Sendable (Double) -> Void)? = nil) async {
         guard !RuntimeLaunchContext.isXcodePreview else { return }
         do {
-            _ = try await runtime()
+            _ = try await runtime(progress: progress)
         } catch {
             // Splash still proceeds; Generate reports the real failure.
         }
     }
 
-    func runtime() async throws -> ShapERuntime {
+    /// `progress` (0...1 weights-download fraction) can be registered by any
+    /// waiter, including one that arrives after `preload()` started the load:
+    /// it receives the current fraction immediately, then subsequent updates,
+    /// while all waiters share the one download.
+    func runtime(progress: (@Sendable (Double) -> Void)? = nil) async throws -> ShapERuntime {
         if RuntimeLaunchContext.isXcodePreview {
             throw ShapERuntimeLoadError.unavailableInPreviews
         }
@@ -133,14 +150,23 @@ actor ShapERuntimeStore {
         }
         let task = ensureLoadTask()
         let epoch = loadEpoch
+        let observerID = progress.map { cb -> UUID in
+            let id = UUID()
+            progressObservers[id] = cb
+            cb(loadProgress)
+            return id
+        }
+        defer { if let observerID { progressObservers[observerID] = nil } }
         do {
             let loaded = try await task.value
             runtime = loaded
             loadTask = nil
+            if loadEpoch == epoch { publishProgress(1) }
             return loaded
         } catch {
             if loadEpoch == epoch {
                 loadTask = nil
+                loadProgress = 0
             }
             throw error
         }
@@ -151,11 +177,13 @@ actor ShapERuntimeStore {
             return loadTask
         }
         loadEpoch &+= 1
-        let task = Task.detached(priority: .userInitiated) {
+        let task = Task.detached(priority: .userInitiated) { [self] in
             // Creating the MLX GPU stream during launch (app still inactive)
             // makes later Generate commit buffers that IOGPU rejects.
             await MLXForegroundGPU.prepare()
-            return try await Self.loadRuntime()
+            return try await Self.loadRuntime { fraction in
+                Task { await self.publishProgress(fraction) }
+            }
         }
         loadTask = task
         return task
@@ -166,10 +194,10 @@ actor ShapERuntimeStore {
         _ = try await RuntimeAssetLocator.resolvedModelBundleURLIncludingImage()
     }
 
-    private static func loadRuntime() async throws -> ShapERuntime {
+    private static func loadRuntime(progress: (@Sendable (Double) -> Void)?) async throws -> ShapERuntime {
         applyDeviceCachePolicy()
         do {
-            let modelURL = try await RuntimeAssetLocator.resolvedModelBundleURL()
+            let modelURL = try await RuntimeAssetLocator.resolvedModelBundleURL(progress: progress)
             // BPE vocab ships as an app resource; the Hugging Face snapshot
             // also carries it at the bundle root for builds without one.
             let bpeURL = Bundle.main.url(forResource: "bpe_simple_vocab_16e6", withExtension: "txt.gz")

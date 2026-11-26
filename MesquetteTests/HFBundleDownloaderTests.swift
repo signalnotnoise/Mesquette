@@ -55,6 +55,25 @@ final class HFBundleDownloaderTests: XCTestCase {
                        "83563625f39180f505a3ccb855e67b59b65989f6545015672465d7487c4bc2cb")
     }
 
+    func testValidateCoverageRejectsEmptyManifest() {
+        XCTAssertThrowsError(try HFBundleDownloader.validateCoverage(entries: [], scope: .full))
+    }
+
+    func testValidateCoverageRejectsMissingImageFamilyForFullScope() {
+        let d = String(repeating: "a", count: 64)
+        let textOnly = [
+            HFBundleDownloader.ChecksumEntry(path: "manifest.json", digest: d),
+            HFBundleDownloader.ChecksumEntry(path: "clip_text/w.bin", digest: d),
+            HFBundleDownloader.ChecksumEntry(path: "text300m/w.bin", digest: d),
+            HFBundleDownloader.ChecksumEntry(path: "diffusion/w.bin", digest: d),
+            HFBundleDownloader.ChecksumEntry(path: "decoder_params/w.bin", digest: d),
+            HFBundleDownloader.ChecksumEntry(path: "renderer/w.bin", digest: d),
+        ]
+        XCTAssertNoThrow(try HFBundleDownloader.validateCoverage(entries: textOnly, scope: .text))
+        // The text->full upgrade must never be stamped off a text-only manifest.
+        XCTAssertThrowsError(try HFBundleDownloader.validateCoverage(entries: textOnly, scope: .full))
+    }
+
     func testVerifyRejectsCorruptedFile() async throws {
         let dir = FileManager.default.temporaryDirectory
             .appendingPathComponent("hf-bundle-test-\(UUID().uuidString)")

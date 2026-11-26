@@ -5,7 +5,6 @@
 
 import CryptoKit
 import Foundation
-import Hub
 
 nonisolated enum HFBundleScope: String, Sendable, Equatable {
     case text
@@ -16,12 +15,16 @@ nonisolated enum HFBundleError: Error, LocalizedError, Sendable {
     case malformedChecksums(String)
     case missingFile(String)
     case checksumMismatch(String)
+    case httpStatus(Int, String)
+    case insufficientCoverage(String)
 
     var errorDescription: String? {
         switch self {
         case .malformedChecksums(let line): return "Malformed checksums.sha256 line: \(line)"
         case .missingFile(let path): return "Downloaded bundle is missing \(path)."
         case .checksumMismatch(let path): return "Checksum mismatch for \(path)."
+        case .httpStatus(let code, let path): return "HTTP \(code) downloading \(path)."
+        case .insufficientCoverage(let what): return "Published bundle manifest is incomplete: \(what)."
         }
     }
 }
@@ -105,10 +108,15 @@ nonisolated enum HFBundleDownloader {
     // MARK: - Download
 
     /// Caches directory the materialized snapshot lives under
-    /// (`HubApi` returns `<base>/models/<repoID>`).
+    /// (`<base>/models/<repoID>`, the layout HubApi used previously).
     static var downloadBase: URL {
         FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("huggingface", isDirectory: true)
+    }
+
+    static var endpoint: String {
+        let raw = ProcessInfo.processInfo.environment["HF_ENDPOINT"] ?? "https://huggingface.co"
+        return raw.hasSuffix("/") ? String(raw.dropLast()) : raw
     }
 
     static func snapshotURL() -> URL {
@@ -159,14 +167,13 @@ nonisolated enum HFBundleDownloader {
     /// against both the bundle's `checksums.sha256` and the pinned constant.
     static func resolveTripoSRWeights(progress: (@Sendable (Double) -> Void)? = nil) async throws -> URL {
         if let local = verifiedTripoWeightsURL() { return local }
-        let api = HubApi(downloadBase: downloadBase)
-        let bundle = try await api.snapshot(
-            from: tripoRepoID,
-            revision: tripoRevision,
-            matching: [tripoWeightsFile, "checksums.sha256"]
-        ) { p in
-            if p.totalUnitCount > 0 { progress?(Double(p.completedUnitCount) / Double(p.totalUnitCount)) }
-        }
+        let bundle = tripoSnapshotURL()
+        try await fetchFiles(
+            repoID: tripoRepoID, revision: tripoRevision,
+            entries: [ChecksumEntry(path: tripoWeightsFile, digest: tripoWeightsSHA256),
+                      ChecksumEntry(path: "checksums.sha256", digest: "")],
+            into: bundle, progress: progress
+        )
         let weights = bundle.appendingPathComponent(tripoWeightsFile)
         guard FileManager.default.fileExists(atPath: weights.path) else {
             throw HFBundleError.missingFile(tripoWeightsFile)
@@ -185,16 +192,208 @@ nonisolated enum HFBundleDownloader {
     /// Returns a directory ShapERuntime can treat as `modelBundleURL`.
     static func resolveBundle(scope: HFBundleScope, progress: (@Sendable (Double) -> Void)? = nil) async throws -> URL {
         if let local = verifiedLocalBundle(scope: scope) { return local }
-        let api = HubApi(downloadBase: downloadBase)
-        let bundle = try await api.snapshot(
-            from: repoID,
-            revision: revision,
-            matching: globs(for: scope)
-        ) { p in
-            if p.totalUnitCount > 0 { progress?(Double(p.completedUnitCount) / Double(p.totalUnitCount)) }
-        }
-        try await verify(bundleURL: bundle, scope: scope)
+        // Checksums first: they are the trust anchor and define the file list.
+        let bundle = snapshotURL()
+        try FileManager.default.createDirectory(at: bundle, withIntermediateDirectories: true)
+        let sumsURL = bundle.appendingPathComponent("checksums.sha256")
+        try await fetchFiles(
+            repoID: repoID, revision: revision,
+            entries: [ChecksumEntry(path: "checksums.sha256", digest: "")],
+            into: bundle, progress: nil
+        )
+        let all = try checksumEntries(in: String(contentsOf: sumsURL, encoding: .utf8))
+        let wanted = entries(all, within: scope)
+        try validateCoverage(entries: all, scope: scope)
+        try await fetchFiles(
+            repoID: repoID, revision: revision,
+            entries: wanted, into: bundle, progress: progress
+        )
+        // fetchFiles verifies every file's SHA-256 (downloaded or pre-existing),
+        // which is the same gate verify() applies; no second pass needed.
         try Data().write(to: stampURL(in: bundle, scope: scope))
         return bundle
     }
+    /// The manifest must actually cover what the scope will run on; an empty
+    /// or truncated `checksums.sha256` must fail here, never reach the stamp.
+    static func validateCoverage(entries all: [ChecksumEntry], scope: HFBundleScope) throws {
+        guard !all.isEmpty else { throw HFBundleError.insufficientCoverage("empty checksums.sha256") }
+        guard all.contains(where: { $0.path == "manifest.json" }) else {
+            throw HFBundleError.insufficientCoverage("missing manifest.json")
+        }
+        for family in families(for: scope) {
+            guard all.contains(where: { $0.path.hasPrefix(family + "/") }) else {
+                throw HFBundleError.insufficientCoverage("no files for family \(family)")
+            }
+        }
+    }
+
+    // MARK: - Parallel fetch engine
+
+    /// Concurrent workers; the previous HubApi snapshot loop was strictly
+    /// one-file-at-a-time, which made a ~1,100-file bundle take minutes of
+    /// per-file redirect/TLS overhead on a single connection.
+    static let maxConcurrentDownloads = 12
+
+    private actor FetchCursor {
+        private var index = 0
+        func next(_ count: Int) -> Int? {
+            guard index < count else { return nil }
+            defer { index += 1 }
+            return index
+        }
+    }
+
+    private actor ByteProgress {
+        private var done: Int64 = 0
+        private let total: Int64
+        private let callback: (@Sendable (Double) -> Void)?
+        init(total: Int64, callback: (@Sendable (Double) -> Void)?) {
+            self.total = max(total, 1)
+            self.callback = callback
+        }
+        func add(_ bytes: Int64) {
+            done += bytes
+            callback?(min(1, Double(done) / Double(total)))
+        }
+    }
+
+    private final class DownloadDelegate: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
+        struct Job {
+            let destination: URL
+            let path: String
+            let continuation: CheckedContinuation<Void, Error>
+        }
+        private let lock = NSLock()
+        private var jobs: [Int: Job] = [:]
+        var onBytes: (@Sendable (Int64) -> Void)?
+
+        func register(taskID: Int, destination: URL, path: String, continuation: CheckedContinuation<Void, Error>) {
+            lock.lock(); jobs[taskID] = Job(destination: destination, path: path, continuation: continuation); lock.unlock()
+        }
+        private func take(_ taskID: Int) -> Job? {
+            lock.lock(); defer { lock.unlock() }
+            return jobs.removeValue(forKey: taskID)
+        }
+        private func peek(_ taskID: Int) -> Job? {
+            lock.lock(); defer { lock.unlock() }
+            return jobs[taskID]
+        }
+        func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask,
+                        didWriteData bytesWritten: Int64, totalBytesWritten: Int64,
+                        totalBytesExpectedToWrite: Int64) {
+            onBytes?(bytesWritten)
+        }
+        func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask,
+                        didFinishDownloadingTo location: URL) {
+            guard let job = peek(downloadTask.taskIdentifier) else { return }
+            // A non-2xx body (e.g. a 404 error page) must never be moved into
+            // place: digests would catch most cases, but `checksums.sha256`
+            // itself has no digest to catch it with.
+            if let http = downloadTask.response as? HTTPURLResponse,
+               !(200..<300).contains(http.statusCode) {
+                take(downloadTask.taskIdentifier)?.continuation.resume(
+                    throwing: HFBundleError.httpStatus(http.statusCode, job.path))
+                return
+            }
+            do {
+                try FileManager.default.createDirectory(
+                    at: job.destination.deletingLastPathComponent(), withIntermediateDirectories: true)
+                if FileManager.default.fileExists(atPath: job.destination.path) {
+                    try FileManager.default.removeItem(at: job.destination)
+                }
+                try FileManager.default.moveItem(at: location, to: job.destination)
+            } catch {
+                take(downloadTask.taskIdentifier)?.continuation.resume(throwing: error)
+            }
+        }
+        func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+            guard let job = take(task.taskIdentifier) else { return }
+            if let error { job.continuation.resume(throwing: error) } else { job.continuation.resume() }
+        }
+    }
+
+    private static func resolveURL(repoID: String, revision: String, path: String) -> URL {
+        var url = URL(string: "\(endpoint)/\(repoID)/resolve/\(revision)")!
+        for component in path.split(separator: "/") {
+            url.appendPathComponent(String(component))
+        }
+        return url
+    }
+
+    /// Best-effort per-file sizes for byte-accurate progress; failures only
+    /// degrade progress weighting, never correctness (digests still gate).
+    private static func fetchSizes(repoID: String, revision: String) async -> [String: Int64] {
+        guard let url = URL(string: "\(endpoint)/api/models/\(repoID)/revision/\(revision)?blobs=true"),
+              let (data, _) = try? await URLSession.shared.data(from: url),
+              let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let siblings = root["siblings"] as? [[String: Any]] else { return [:] }
+        var sizes: [String: Int64] = [:]
+        for sib in siblings {
+            if let name = sib["rfilename"] as? String, let size = sib["size"] as? Int64 {
+                sizes[name] = size
+            }
+        }
+        return sizes
+    }
+
+    /// Download `entries` into `bundle` concurrently, verifying each file's
+    /// SHA-256 (entries with an empty digest are fetched unverified — used
+    /// only for `checksums.sha256` itself, whose *contents* are then the
+    /// trust anchor). Existing files with a matching digest are skipped.
+    private static func fetchFiles(
+        repoID: String,
+        revision: String,
+        entries: [ChecksumEntry],
+        into bundle: URL,
+        progress: (@Sendable (Double) -> Void)?
+    ) async throws {
+        try FileManager.default.createDirectory(at: bundle, withIntermediateDirectories: true)
+        let sizes = await fetchSizes(repoID: repoID, revision: revision)
+        let total = entries.reduce(Int64(0)) { $0 + (sizes[$1.path] ?? 0) }
+        let byteProgress = ByteProgress(total: total > 0 ? total : Int64(entries.count), callback: progress)
+        let useBytes = total > 0
+
+        let delegate = DownloadDelegate()
+        delegate.onBytes = { delta in
+            if useBytes { Task { await byteProgress.add(delta) } }
+        }
+        let config = URLSessionConfiguration.default
+        config.httpMaximumConnectionsPerHost = maxConcurrentDownloads
+        config.waitsForConnectivity = true
+        let session = URLSession(configuration: config, delegate: delegate, delegateQueue: nil)
+        defer { session.finishTasksAndInvalidate() }
+
+        let cursor = FetchCursor()
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            for _ in 0..<min(maxConcurrentDownloads, max(entries.count, 1)) {
+                group.addTask {
+                    while let i = await cursor.next(entries.count) {
+                        let entry = entries[i]
+                        let dest = bundle.appendingPathComponent(entry.path)
+                        if !entry.digest.isEmpty,
+                           FileManager.default.fileExists(atPath: dest.path),
+                           (try? sha256Hex(of: dest)) == entry.digest {
+                            await byteProgress.add(useBytes ? (sizes[entry.path] ?? 0) : 1)
+                            continue
+                        }
+                        try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
+                            let task = session.downloadTask(with: resolveURL(repoID: repoID, revision: revision, path: entry.path))
+                            delegate.register(taskID: task.taskIdentifier, destination: dest, path: entry.path, continuation: cont)
+                            task.resume()
+                        }
+                        if !entry.digest.isEmpty {
+                            guard try sha256Hex(of: dest) == entry.digest else {
+                                try? FileManager.default.removeItem(at: dest)
+                                throw HFBundleError.checksumMismatch(entry.path)
+                            }
+                        }
+                        if !useBytes { await byteProgress.add(1) }
+                    }
+                }
+            }
+            try await group.waitForAll()
+        }
+        progress?(1)
+    }
+
 }
