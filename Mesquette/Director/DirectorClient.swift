@@ -11,7 +11,9 @@ import FoundationModels
 #endif
 
 @MainActor
-/// The Director surface `ContentViewModel` depends on; one async call per user intent.
+/// The Director surface `ContentViewModel` depends on. Composite flows
+/// (e.g. `planPinsOrFallback`) may call several of these in sequence:
+/// tagging first, then extras planning only when the budget allows.
 protocol DirectorServicing {
     func compile(intent: String) async throws -> CompiledPrompt
     func inventPreset(seed: String, avoidingTitles: [String]) async throws -> InventedPreset
