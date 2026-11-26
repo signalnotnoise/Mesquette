@@ -1,5 +1,6 @@
 #if os(visionOS)
 import SwiftUI
+import os
 import PhotosUI
 
 struct PromptInputView: View {
@@ -144,12 +145,24 @@ struct PromptInputView: View {
         .onChange(of: selectedItem) { _, newItem in
             appModel.isProcessingImage = true
             Task {
-                if let data = try? await newItem?.loadTransferable(type: Data.self),
+                let pickedData: Data?
+                do {
+                    pickedData = try await newItem?.loadTransferable(type: Data.self)
+                } catch {
+                    Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.visionarydevops.Mesquette", category: "image").error("Image pick failed: \(error.localizedDescription, privacy: .public)")
+                    pickedData = nil
+                }
+                if let data = pickedData,
                    let uiImage = UIImage(data: data) {
                     var finalImg = uiImage
-                    if let cgImage = uiImage.cgImage,
-                       let stripped = try? await ImageBackgroundRemoval.removeBackground(from: cgImage) {
-                        finalImg = UIImage(cgImage: stripped)
+                    if let cgImage = uiImage.cgImage {
+                        do {
+                            if let stripped = try await ImageBackgroundRemoval.removeBackground(from: cgImage) {
+                                finalImg = UIImage(cgImage: stripped)
+                            }
+                        } catch {
+                            Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.visionarydevops.Mesquette", category: "image").error("Background removal failed: \(error.localizedDescription, privacy: .public)")
+                        }
                     }
                     await MainActor.run {
                         appModel.inputImage = finalImg

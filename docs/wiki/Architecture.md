@@ -119,6 +119,5 @@ planning internals: [Director.md](Director.md).
   `DirectorSessionTests` (apply/revert/stamp), `ModelSelectionTests`
   (picker forces image mode).
 - macOS build (`xcodebuild -scheme Mesquette`) is the gate that runs
-  today; the test target is visionOS-only and currently uncompilable
-  (see AGENTS Verify). Flow-level evidence to date comes from driving
+  today; unit tests run on macOS (see AGENTS Verify). Flow-level evidence also comes from driving
   `ContentViewModel` headlessly against real weights.

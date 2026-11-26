@@ -1,6 +1,6 @@
 {
   "schema": "mesquette.knowledge-graph.v1",
-  "generated": "2026-11-17",
+  "generated": "2026-11-25",
   "branch": "feature/visionOS",
   "product": {
     "name": "Mesquette",
@@ -34,6 +34,11 @@
   "nodes": [
     { "id": "AppModel", "type": "state", "path": "Mesquette/AppModel.swift", "summary": "Shared app state: prompt, pins, generationDict, extras budget, pinPlanNote." },
     { "id": "ContentViewModel", "type": "orchestrator", "path": "Mesquette/ContentViewViewModel.swift", "summary": "generateAtPins, generateMesh, generateMeshSet, retryPin, Shap-E jobs." },
+    { "id": "ContentViewModelPlanning", "type": "orchestrator", "path": "Mesquette/ContentViewViewModel+Planning.swift", "summary": "Extension: tag/extras planning with hard timeouts degrading to code cast." },
+    { "id": "ContentViewModelProgress", "type": "orchestrator", "path": "Mesquette/ContentViewViewModel+Progress.swift", "summary": "Extension: monotonic phase-weighted progress mapping." },
+    { "id": "ContentViewModelPins", "type": "orchestrator", "path": "Mesquette/ContentViewViewModel+Pins.swift", "summary": "Extension: generateAtPins and retryPin flows." },
+    { "id": "ContentViewModelSet", "type": "orchestrator", "path": "Mesquette/ContentViewViewModel+Set.swift", "summary": "Extension: generateMeshSet and sequential runTextJob." },
+    { "id": "Mac3DPreviewCoordinator", "type": "viewport", "path": "Mesquette/macOS/Mac3DPreviewCoordinator.swift", "summary": "Mac preview gestures, camera tracking, pin drag/retry, undo." },
     { "id": "DirectorClient", "type": "fm", "path": "Mesquette/Director/DirectorClient.swift", "summary": "Foundation Models sessions; assignmentsMatchingPinIndex." },
     { "id": "DirectorStaging", "type": "planner", "path": "Mesquette/Director/DirectorStaging.swift", "summary": "Code cast, identity, prompt validation, namedPinJobs." },
     { "id": "DirectorLayoutEngine", "type": "layout", "path": "Mesquette/Director/DirectorLayoutEngine.swift", "summary": "Slots to meters, AABB fit, packRecords by pinID." },
@@ -50,7 +55,7 @@
     { "id": "TripoSRStore", "type": "runtime", "path": "Mesquette/TripoSRStore.swift", "summary": "Actor: builds ThreeDGenerationRuntime (.tripoSR) from verified weights; failed loads not cached." },
     { "id": "MeshExporter", "type": "export", "path": "Mesquette/MeshExporter.swift", "summary": "OBJ+MTL ZIP, USDZ, validatedFaceIndices." },
     { "id": "ShapEMeshAdapter", "type": "viewport", "path": "Mesquette/ShapEMeshAdapter.swift", "summary": "visionOS MeshResult to RealityKit; shares face validation." },
-    { "id": "SceneKitStudio", "type": "viewport", "path": "Mesquette/macOS/SceneKitStudio.swift", "summary": "Plant mesh at pin without rest-pose sit." },
+    { "id": "SceneKitStudio", "type": "viewport", "path": "Mesquette/macOS/SceneKitStudio.swift", "summary": "Plant mesh at pin without rest-pose sit; shared makeGeometry for macOS+iPad previews." },
     { "id": "StudioCamera", "type": "viewport", "path": "Mesquette/macOS/StudioCamera.swift", "summary": "Orbit tumble / top / walk. Not arcball." },
     { "id": "MacChatPanel", "type": "ui", "path": "Mesquette/macOS/MacChatPanelView.swift", "summary": "Create panel; Extra props slider; pinPlanNote." },
     { "id": "Mac3DPreview", "type": "ui", "path": "Mesquette/macOS/Mac3DPreviewView.swift", "summary": "SceneKit canvas, pin click/drag/retry." },
@@ -63,6 +68,11 @@
     { "from": "MacChatPanel", "to": "ContentViewModel", "rel": "calls", "note": "generateAtPins when pins exist" },
     { "from": "Mac3DPreview", "to": "AppModel", "rel": "writes", "note": "add/move/remove pins" },
     { "from": "ContentViewModel", "to": "DirectorClient", "rel": "calls", "note": "tagSceneCast then planPins extras" },
+    { "from": "ContentViewModel", "to": "ContentViewModelPlanning", "rel": "contains" },
+    { "from": "ContentViewModel", "to": "ContentViewModelProgress", "rel": "contains" },
+    { "from": "ContentViewModel", "to": "ContentViewModelPins", "rel": "contains" },
+    { "from": "ContentViewModel", "to": "ContentViewModelSet", "rel": "contains" },
+    { "from": "Mac3DPreview", "to": "Mac3DPreviewCoordinator", "rel": "contains" },
     { "from": "ContentViewModel", "to": "DirectorStaging", "rel": "calls", "note": "resolvedCast, namedPinJobs, fallbackPinJobs" },
     { "from": "ContentViewModel", "to": "ShapERuntimeStore", "rel": "calls", "note": "runtime() per job" },
     { "from": "ContentViewModel", "to": "DirectorLayoutEngine", "rel": "calls", "note": "packRecords after meshes" },
@@ -133,7 +143,7 @@
   },
   "verify": {
     "macBuild": "DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer xcodebuild -scheme Mesquette -destination 'platform=macOS,arch=arm64' build",
-    "tests": "MesquetteTests is visionOS-only; RuntimeAssetLocator availability currently blocks xrsimulator compile on 26.2 deployment vs 27 APIs.",
+    "tests": "MesquetteTests run on macOS via the shared Mesquette scheme (101 tests); visionOS build-for-testing compiles.",
     "doNot": "Do not score Shap-E mesh quality in CI."
   }
 }

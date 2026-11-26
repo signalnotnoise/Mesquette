@@ -177,6 +177,7 @@ nonisolated enum DirectorLayoutEngine {
     // MARK: - After mesh: sit extents, scale to height, pack
 
     static func rawExtents(from mesh: MeshResult) -> SIMD3<Float>? {
+        // try?: a tensor that cannot materialize has no extents; callers treat nil as no-fit.
         guard let verts = try? mesh.vertices.float32Values(), verts.count >= 3 else {
             return nil
         }

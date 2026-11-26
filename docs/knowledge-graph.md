@@ -3,7 +3,7 @@
 **For agents.** Read this before changing Director, pins, layout, Shap-E loading, or export.  
 **Product name:** Mesquette (`AppIdentity.name`). Xcode project/folder is `Mesquette`.  
 **Bundle id:** `com.visionarydevops.Mesquette`  
-**Generated:** 2026-11-17  
+**Generated:** 2026-11-25  
 **Machine copy:** [`knowledge-graph.json`](knowledge-graph.json)  
 **Keep in sync:** any Swift change in this repo must update this file and the JSON in the same turn. `scripts/check-knowledge-graph.sh` enforces it.
 
@@ -63,7 +63,7 @@ AssetDownloader/               StoreDownloaderExtension (hosted weights)
 AssetPacks/                    shap-e-text (essential), shap-e-image (prefetch)
 runtime_bundle/                NOT a build input anymore. Asset-pack packaging workspace only (scripts/fetch-weights.sh), gitignored
 Packages/RealityKitContent     visionOS table scene
-MesquetteTests/            visionOS-only test target (xros)
+MesquetteTests/            unit tests (macOS + visionOS; run on macOS)
 Vendor/apple-mlx-foundations/    git submodule (signalnotnoise/apple-mlx-foundations) pinned `3de8228` (post-v0.1.0 main); shap_e/swift = local package ShapERuntime
 ```
 
@@ -224,12 +224,13 @@ Do not silently treat this as the pin path. Rewriting only `DirectorSystemPrompt
 |---|---|
 | Weights | Shap-E **text300m** + CLIP ViT-L/14 77 tokens. Image pipeline (`clip_vision`, `image300m`) on first image generate |
 | Debug | No weights in the app (88 MB). First launch: `HFBundleDownloader` snapshot-downloads HF `signalNotNoise/shap-e-mlx` @ `d71f70a` (v0.1.0) into `Caches/huggingface`, SHA-256 verified + stamped for offline reuse. `scripts/fetch-weights.sh` remains only to stage `runtime_bundle/` for asset-pack packaging |
-| Release | Background Assets: `shap-e-text` essential, `shap-e-image` prefetch; HF fallback if packs unavailable. Never touch Background Assets without a team ID — `AssetPackManager` traps (does not throw) in ad-hoc builds; `RuntimeAssetLocator.hasTeamIdentifier` gates it |
+| Release | Background Assets: `shap-e-text` essential, `shap-e-image` prefetch; HF fallback if packs unavailable. Never touch Background Assets without a team ID — `AssetPackManager` traps (does not throw) in ad-hoc builds; `RuntimeAssetLocator.hasTeamIdentifier` gates it (macOS: SecCode signing info; iOS/visionOS: embedded provisioning profile, since SecCode is macOS-only) |
 | Load | `ShapERuntimeStore` actor. Failed `loadTask` is cleared (`loadEpoch`) so Generate can retry |
 | GPU | `MLXForegroundGPU` binds Metal on main after the app is active |
 | Preview | `RuntimeLaunchContext.isXcodePreview` skips MLX (PreviewShell abort) |
 | Export | USDZ as-is. OBJ writes `.obj`+`.mtl`, share/save a **ZIP** of both |
 | Indices | `MeshExporter.validatedFaceIndices` shared with `ShapEMeshAdapter` (visionOS). No trapping `UInt32(v)` |
+| Logging | `os.Logger` only (categories: `place`, `image`, `generate`, `mesh-adapter`, `immersive`); no `print` in app sources, prompt fragments `.private` |
 
 Shap-E blobs are a **model prior** problem, not a Director bug, once prompts actually name the object.
 
@@ -239,7 +240,7 @@ Shap-E blobs are a **model prior** problem, not a Director bug, once prompts act
 
 | Platform | Renderer | Notes |
 |---|---|---|
-| macOS | SceneKit (`Mac3DPreviewView`, `SceneKitStudio`) | Pin click/drag; tumble orbit (look down); walk first-person; shading modes |
+| macOS | SceneKit (`Mac3DPreviewView`, `SceneKitStudio` incl. shared `makeGeometry`) | Pin click/drag; tumble orbit (look down); walk first-person; shading modes |
 | iPad / iPhone | SceneKit | Phone: full-canvas + bottom sheet |
 | visionOS | RealityKit (`ImmersiveStudio`, `ShapEMeshAdapter`) | Glass table ~1.25 m forward, 0.72 m high. Vertex colors baked per triangle |
 
@@ -249,7 +250,7 @@ Table axes: **+X right, +Z toward the user**, Y up. Pin Y is height above the ta
 
 ## 11. Tests and how to verify
 
-Test **target is visionOS-only** (`SUPPORTED_PLATFORMS = xros xrsimulator`, deployment 26.2). Compiling tests on the 27 SDK still hits `RuntimeAssetLocator` (`manifest` / `assetPack(withID:)` need visionOS 27 availability). **Verified compile path:**
+Test target runs on macOS via the shared scheme (`SUPPORTED_PLATFORMS = macosx xros xrsimulator`): `xcodebuild test -scheme Mesquette -destination 'platform=macOS,arch=arm64'` (101 tests). visionOS build-for-testing also compiles. **Verified compile path:**
 
 ```
 DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer \
@@ -291,7 +292,7 @@ Do **not** add mesh-quality CI. Planner fixtures (titles, pinIDs, prompts) only.
 
 ```
 AppModel.swift
-ContentViewViewModel.swift
+ContentViewViewModel.swift (+Planning/+Progress/+Pins/+Set extensions)
 Director/DirectorStaging.swift
 Director/DirectorClient.swift
 Director/DirectorLayoutEngine.swift
@@ -308,6 +309,7 @@ macOS/MacContentView.swift
 macOS/MacChatPanelView.swift
 macOS/Mac3DPreviewView.swift
 macOS/SceneKitStudio.swift
+macOS/Mac3DPreviewCoordinator.swift
 macOS/StudioCamera.swift
 RuntimeAssetLocator.swift
 ```

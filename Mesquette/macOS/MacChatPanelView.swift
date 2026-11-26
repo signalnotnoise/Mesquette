@@ -6,6 +6,7 @@ import SwiftUI
 import AppKit
 import RuntimeWrapper
 import UniformTypeIdentifiers
+import os
 
 /// Right-hand panel optimized for a clear macOS create workflow:
 /// 1) Choose Text / Image  2) Set quality  3) Describe / pick idea  4) Generate
@@ -592,7 +593,7 @@ struct MacChatPanelView: View {
                         )
                     }
                 } catch {
-                    print("Background removal failed: \(error)")
+                    Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.visionarydevops.Mesquette", category: "image").error("Background removal failed: \(error.localizedDescription, privacy: .public)")
                 }
             }
             await MainActor.run {

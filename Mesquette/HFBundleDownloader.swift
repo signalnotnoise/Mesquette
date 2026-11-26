@@ -94,7 +94,7 @@ nonisolated enum HFBundleDownloader {
 
     private static func sha256Hex(of url: URL) throws -> String {
         let handle = try FileHandle(forReadingFrom: url)
-        defer { try? handle.close() }
+        defer { try? handle.close() }  // best-effort close; nothing actionable on failure
         var hasher = SHA256()
         while let chunk = try handle.read(upToCount: 1 << 20), !chunk.isEmpty {
             hasher.update(data: chunk)

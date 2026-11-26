@@ -91,9 +91,8 @@ and run `scripts/check-knowledge-graph.sh` — see [AGENTS.md](AGENTS.md).
 
 ## Tests
 
-Planner/layout tests live in `MesquetteTests/`. Note: the test target is
-currently visionOS-only and does not compile on the latest visionOS SDK;
-the verified path is the macOS build above.
+Planner/layout tests live in `MesquetteTests/` and run on macOS:
+`xcodebuild test -scheme Mesquette -destination 'platform=macOS,arch=arm64'`.
 
 ## License
 

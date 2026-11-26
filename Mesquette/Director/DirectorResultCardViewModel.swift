@@ -6,6 +6,7 @@ import Observation
 
 @Observable
 @MainActor
+/// Presentation state for a compiled set card (selection, part removal, generate-set).
 final class DirectorResultCardViewModel {
     func revert(appModel: AppModel) {
         DirectorSession.revert(to: appModel)

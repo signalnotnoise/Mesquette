@@ -7,6 +7,7 @@
 
 #if os(visionOS)
 import SwiftUI
+import os
 import RealityKit
 import RealityKitContent
 
@@ -19,10 +20,13 @@ struct ImmersiveView: View {
     var body: some View {
         RealityView { content in
             // Load static RealityKit content bundle (skybox / environment).
-            if let immersiveContentEntity = try? await Entity(
-                named: "Immersive", in: realityKitContentBundle
-            ) {
+            do {
+                let immersiveContentEntity = try await Entity(
+                    named: "Immersive", in: realityKitContentBundle
+                )
                 content.add(immersiveContentEntity)
+            } catch {
+                Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.visionarydevops.Mesquette", category: "immersive").error("Failed to load Immersive scene entity: \(error.localizedDescription, privacy: .public)")
             }
             
             // Add our managed root entity for generations

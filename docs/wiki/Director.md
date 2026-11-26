@@ -123,6 +123,5 @@ Shap-E jobs and placements. Structure: [`knowledge-graph.md`](../knowledge-graph
   strip without clipping, ground dropping, JSON round-trip.
 - `DirectorSessionTests` / `DirectorSplitPolicyTests` — stamp non-leakage,
   revert, prompt-policy phrases.
-- **Cannot currently run**: target is visionOS-only and does not compile on
-  the visionOS 27 SDK (see AGENTS Verify). On macOS today these behaviors
-  are only exercisable indirectly through app/harness generation runs.
+- Suite runs on macOS via the shared scheme (see AGENTS Verify);
+  through-app generation runs remain the evidence for FM-dependent paths.

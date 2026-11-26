@@ -4,6 +4,7 @@
 #if os(iOS)
 import SwiftUI
 import PhotosUI
+import os
 
 /// Small-screen layout: the 3D canvas is the full screen (Maps / Find My).
 /// Create lives in an in-window bottom panel that hugs the composer at peek, then
@@ -130,7 +131,7 @@ struct IPhoneContentView: View {
         guard let newItem else { return }
         appModel.isProcessingImage = true
         Task {
-            if let data = try? await newItem.loadTransferable(type: Data.self),
+            if let data = try? await newItem.loadTransferable(type: Data.self),  // try?: pick failure keeps current image and resets isProcessing below; nothing to surface
                let rawImage = UIImage(data: data) {
                 var finalImg = rawImage
                 if let cgImage = rawImage.cgImage {
@@ -139,7 +140,7 @@ struct IPhoneContentView: View {
                             finalImg = UIImage(cgImage: stripped)
                         }
                     } catch {
-                        print("Background removal failed with error: \(error)")
+                        Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.visionarydevops.Mesquette", category: "image").error("Background removal failed: \(error.localizedDescription, privacy: .public)")
                     }
                 }
                 appModel.inputImage = finalImg

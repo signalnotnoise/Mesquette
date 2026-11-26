@@ -118,4 +118,4 @@ upstream runtime behavior belongs to apple-mlx-foundations, not this repo.
   foundations); Mesquette-side evidence is build + through-app runs.
 - Cannot verify here today: signed Background Assets download (needs
   team-signed build + uploaded packs or `ba-serve`), and the unit tests
-  themselves (visionOS-only target, see AGENTS Verify).
+  themselves (run on macOS, see AGENTS Verify).

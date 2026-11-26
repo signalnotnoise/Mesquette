@@ -7,6 +7,8 @@ import Foundation
 import FoundationModels
 #endif
 
+/// Synchronous snapshot of Foundation Models availability for UI gating;
+/// `DirectorClient` re-checks immediately before any model call.
 nonisolated enum DirectorAvailabilityChecker {
     /// Foundation Models is the on-device LLM already on the system.
     /// Do not load a third-party LLM via Core ML: Shap-E already owns GPU/RAM via MLX.

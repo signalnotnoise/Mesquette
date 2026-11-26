@@ -3,6 +3,7 @@
 
 #if os(macOS) || os(iOS)
 import SceneKit
+import ShapERuntime
 import simd
 #if os(macOS)
 import AppKit
@@ -10,7 +11,74 @@ import AppKit
 import UIKit
 #endif
 
+/// Shared SceneKit studio for macOS+iOS: scene install (floor/lights/camera),
+/// table planting with gravity pivot, shading modes, and camera rig application.
 enum SceneKitStudio {
+
+    /// Build SceneKit geometry from a runtime mesh. Shared by the macOS and
+    /// iPad previews — keep single-sourced so both renderers show the same
+    /// mesh (the visionOS color path is separate; see `ShapEMeshAdapter`).
+    static func makeGeometry(from mesh: MeshResult, shadingMode: AppModel.ShadingMode) -> SCNGeometry? {
+        guard mesh.vertices.elementCount % 3 == 0 else { return nil }
+        let vertexCount = mesh.vertices.elementCount / 3
+
+        let posSource = SCNGeometrySource(
+            data: mesh.vertices.data, semantic: .vertex,
+            vectorCount: vertexCount, usesFloatComponents: true,
+            componentsPerVector: 3, bytesPerComponent: 4,
+            dataOffset: 0, dataStride: 12)
+
+        let idxData: Data
+        let indexCount: Int
+        if mesh.faces.dataType == .int32 {
+            idxData = mesh.faces.data
+            indexCount = mesh.faces.elementCount
+        } else if mesh.faces.dataType == .int64,
+                  let raw = try? mesh.faces.int64Values(),
+                  let validated = try? MeshExporter.validatedFaceIndices(raw, vertexCount: vertexCount) {
+            idxData = validated.withUnsafeBytes { Data($0) }
+            indexCount = validated.count
+        } else {
+            return nil
+        }
+
+        guard indexCount > 0 else { return nil }
+
+        let element = SCNGeometryElement(data: idxData, primitiveType: .triangles,
+                                         primitiveCount: indexCount / 3, bytesPerIndex: 4)
+
+        var sources: [SCNGeometrySource] = [posSource]
+        var hasColors = false
+        if let ch = mesh.vertexChannels,
+           let rgbaTensor = ch["RGBA"],
+           rgbaTensor.elementCount == vertexCount * 4 {
+            let colSource = SCNGeometrySource(data: rgbaTensor.data, semantic: .color,
+                                              vectorCount: vertexCount, usesFloatComponents: true,
+                                              componentsPerVector: 4, bytesPerComponent: 4,
+                                              dataOffset: 0, dataStride: 16)
+            sources.append(colSource)
+            hasColors = true
+        }
+
+        let geometry = SCNGeometry(sources: sources, elements: [element])
+        let mat = SCNMaterial()
+        mat.isDoubleSided = true
+        mat.lightingModel = .phong
+        mat.locksAmbientWithDiffuse = true
+        if shadingMode == .flat {
+            mat.shaderModifiers = [.surface: flatShaderModifier]
+        }
+        mat.fillMode = (shadingMode == .wireframe ? .lines : .fill)
+        if !hasColors {
+#if os(macOS)
+            mat.diffuse.contents = NSColor(white: 0.78, alpha: 1)
+#else
+            mat.diffuse.contents = UIColor(white: 0.78, alpha: 1)
+#endif
+        }
+        geometry.materials = [mat]
+        return geometry
+    }
 
     static func install(in scene: SCNScene) {
         let floor = SCNPlane(width: 12, height: 12)

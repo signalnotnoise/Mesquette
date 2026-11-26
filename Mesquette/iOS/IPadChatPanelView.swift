@@ -4,6 +4,7 @@
 #if os(iOS)
 import SwiftUI
 import PhotosUI
+import os
 
 /// Right-hand chat panel for iPad: history of prompts + parameter controls + input bar.
 struct IPadChatPanelView: View {
@@ -209,7 +210,7 @@ struct IPadChatPanelView: View {
             guard let newItem else { return }
             appModel.isProcessingImage = true
             Task {
-                if let data = try? await newItem.loadTransferable(type: Data.self),
+                if let data = try? await newItem.loadTransferable(type: Data.self),  // try?: pick failure keeps current image and resets isProcessing below; nothing to surface
                    let rawImage = UIImage(data: data) {
                     var finalImg = rawImage
                     if let cgImage = rawImage.cgImage {
@@ -217,10 +218,10 @@ struct IPadChatPanelView: View {
                             if let stripped = try await ImageBackgroundRemoval.removeBackground(from: cgImage) {
                                 finalImg = UIImage(cgImage: stripped)
                             } else {
-                                print("Vision succeeded but returned nil mask.")
+                                Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.visionarydevops.Mesquette", category: "image").error("Vision succeeded but returned nil mask.")
                             }
                         } catch {
-                            print("Background removal failed with error: \(error)")
+                            Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.visionarydevops.Mesquette", category: "image").error("Background removal failed: \(error.localizedDescription, privacy: .public)")
                         }
                     }
                     await MainActor.run {

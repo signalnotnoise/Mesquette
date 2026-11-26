@@ -185,7 +185,9 @@ struct SplashView: View {
     @MainActor
     private func runLaunchSequence() async {
         if RuntimeLaunchContext.isXcodePreview {
-            await playIntro()
+            // Sleeps in this file are animation choreography (presentation timing),
+        // not synchronization — the sanctioned exception in AGENTS.md.
+        await playIntro()
             return
         }
 

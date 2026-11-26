@@ -5,6 +5,8 @@
 import Foundation
 import simd
 
+/// Pure camera math (orbit/top/walk) shared by all SceneKit hosts. No SceneKit
+/// types, so the rig is unit-testable; `SceneKitStudio.apply` realizes it.
 nonisolated struct StudioCameraRig: Equatable, Sendable {
 
     enum View: String, CaseIterable, Sendable {

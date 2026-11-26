@@ -7,6 +7,9 @@ import Foundation
 import FoundationModels
 
 @Generable
+/// `@Generable` mirror of `DirectorKind` for Foundation Models guided generation.
+/// These schemas are the LLM contract; `asCompiledPrompt()`-style mapping back into
+/// staging types is where untrusted model output first enters typed code.
 enum GenerableDirectorKind {
     case single
     case set

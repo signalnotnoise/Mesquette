@@ -38,6 +38,8 @@ private struct AppliedTablePose: Equatable {
 
 // MARK: - View
 
+/// iPad SceneKit viewport host (scene sync, pin markers); geometry comes from
+/// `SceneKitStudio.makeGeometry` so it matches the Mac preview exactly.
 struct IPad3DPreviewView: UIViewRepresentable {
 
     let records:      [GenerationRecord]
@@ -165,58 +167,7 @@ struct IPad3DPreviewView: UIViewRepresentable {
     // MARK: Geometry builder
 
     private func buildGeometry(from mesh: MeshResult) -> SCNGeometry? {
-        guard mesh.vertices.elementCount % 3 == 0 else { return nil }
-        let vertexCount = mesh.vertices.elementCount / 3
-
-        let posSource = SCNGeometrySource(
-            data: mesh.vertices.data, semantic: .vertex,
-            vectorCount: vertexCount, usesFloatComponents: true,
-            componentsPerVector: 3, bytesPerComponent: 4,
-            dataOffset: 0, dataStride: 12)
-
-        let idxData: Data
-        let indexCount: Int
-        if mesh.faces.dataType == .int32 {
-            idxData = mesh.faces.data
-            indexCount = mesh.faces.elementCount
-        } else if mesh.faces.dataType == .int64, let raw = try? mesh.faces.int64Values() {
-            let idx32 = raw.map { Int32($0) }
-            idxData = idx32.withUnsafeBytes { Data($0) }
-            indexCount = idx32.count
-        } else {
-            return nil
-        }
-        
-        guard indexCount > 0 else { return nil }
-        
-        let element = SCNGeometryElement(data: idxData, primitiveType: .triangles,
-                                         primitiveCount: indexCount / 3, bytesPerIndex: 4)
-
-        var sources: [SCNGeometrySource] = [posSource]
-        var hasColors = false
-        if let ch = mesh.vertexChannels,
-           let rgbaTensor = ch["RGBA"],
-           rgbaTensor.elementCount == vertexCount * 4 {
-            let colSource = SCNGeometrySource(data: rgbaTensor.data, semantic: .color,
-                                              vectorCount: vertexCount, usesFloatComponents: true,
-                                              componentsPerVector: 4, bytesPerComponent: 4,
-                                              dataOffset: 0, dataStride: 16)
-            sources.append(colSource)
-            hasColors = true
-        }
-
-        let geometry  = SCNGeometry(sources: sources, elements: [element])
-        let mat       = SCNMaterial()
-        mat.isDoubleSided = true
-        mat.lightingModel = .phong
-        mat.locksAmbientWithDiffuse = true
-        if shadingMode == .flat {
-            mat.shaderModifiers = [.surface: SceneKitStudio.flatShaderModifier]
-        }
-        mat.fillMode = (shadingMode == .wireframe ? .lines : .fill)
-        if !hasColors { mat.diffuse.contents = UIColor(white: 0.78, alpha: 1) }
-        geometry.materials = [mat]
-        return geometry
+        SceneKitStudio.makeGeometry(from: mesh, shadingMode: shadingMode)
     }
 }
 
@@ -232,10 +183,10 @@ extension IPad3DPreviewView {
         var lastShadingMode:  AppModel.ShadingMode = .smooth
 
         var addedNodes: [UUID: SCNNode] = [:]
-        var lastMeshStamp: [UUID: PreviewMeshStamp] = [:]
-        var lastTablePose: [UUID: AppliedTablePose] = [:]
+        fileprivate var lastMeshStamp: [UUID: PreviewMeshStamp] = [:]
+        fileprivate var lastTablePose: [UUID: AppliedTablePose] = [:]
 
-        private var undoStacks: [ObjectIdentifier: [NodeTransform]] = [:]
+        fileprivate var undoStacks: [ObjectIdentifier: [NodeTransform]] = [:]
         private let undoManager = UndoManager()
 
         // MARK: Drag state

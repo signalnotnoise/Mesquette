@@ -21,6 +21,7 @@
 
 #if os(visionOS)
 import Foundation
+import os
 import RealityKit
 import SwiftUI
 import ShapERuntime
@@ -36,7 +37,14 @@ public enum ShapEMeshAdapterError: Error {
     case capacityExceeded
 }
 
+/// Converts a `MeshResult` into RealityKit geometry for visionOS, baking
+/// vertex colors per-triangle into a texture (RealityKit has no vertex-color
+/// channel standard materials will shade). See the file header for details.
 public struct ShapEMeshAdapter {
+    private static let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? "com.visionarydevops.Mesquette",
+        category: "mesh-adapter"
+    )
 
     // MARK: - Public API
 
@@ -81,9 +89,9 @@ public struct ShapEMeshAdapter {
               colors.count == geometry.vertexCount * 4
         else {
             if isPartial {
-                print("[ShapEMeshAdapter] ℹ️ Partial mesh – skipping vertex colours.")
+                logger.info("Partial mesh – skipping vertex colours.")
             } else {
-                print("[ShapEMeshAdapter] ℹ️ No vertex colour channels – uniform material.")
+                logger.info("No vertex colour channels – uniform material.")
             }
             let mesh = try buildMeshDescriptor(
                 positions: geometry.positions,
@@ -113,11 +121,9 @@ public struct ShapEMeshAdapter {
                     withName: "ShapEVertexColours",
                     options: options
                 )
-                print("[ShapEMeshAdapter] ✅ Per-triangle colour texture \(baked.texWidth)×\(baked.texHeight) "
-                    + "for \(baked.triangleCount) tris (\(baked.positions.count) expanded verts)")
+                logger.debug("Per-triangle colour texture \(baked.texWidth)x\(baked.texHeight) for \(baked.triangleCount) tris (\(baked.positions.count) expanded verts)")
             } catch {
-                print("[ShapEMeshAdapter] ⚠️ TextureResource creation failed: \(error). "
-                    + "Falling back to uniform material.")
+                logger.error("TextureResource creation failed: \(error.localizedDescription, privacy: .public). Falling back to uniform material.")
                 let mesh = try buildMeshDescriptor(
                     positions: geometry.positions,
                     indices: geometry.indices,
@@ -188,8 +194,7 @@ public struct ShapEMeshAdapter {
             if vals.count == vertexCount * 4 {
                 colors = vals
             } else {
-                print("[ShapEMeshAdapter] ⚠️ Colour channel count mismatch – "
-                    + "RGBA \(vals.count) vs expected \(vertexCount * 4).")
+                logger.error("Colour channel count mismatch – RGBA \(vals.count) vs expected \(vertexCount * 4).")
             }
         }
 
@@ -437,7 +442,7 @@ public struct ShapEMeshAdapter {
                         options: options
                     )
                 } catch {
-                    print("[ShapEMeshAdapter] ⚠️ TextureResource creation failed: \(error)")
+                    logger.error("TextureResource creation failed: \(error)")
                 }
             }
         } else {
@@ -447,13 +452,11 @@ public struct ShapEMeshAdapter {
         }
 
         guard positions.count <= lowLevelMesh.descriptor.vertexCapacity else {
-            print("[ShapEMeshAdapter] ⚠️ vertexCount \(positions.count) exceeds capacity "
-                + "\(lowLevelMesh.descriptor.vertexCapacity)")
+            logger.error("vertexCount \(positions.count) exceeds capacity \(lowLevelMesh.descriptor.vertexCapacity)")
             throw ShapEMeshAdapterError.capacityExceeded
         }
         guard indices.count <= lowLevelMesh.descriptor.indexCapacity else {
-            print("[ShapEMeshAdapter] ⚠️ indexCount \(indices.count) exceeds capacity "
-                + "\(lowLevelMesh.descriptor.indexCapacity)")
+            logger.error("indexCount \(indices.count) exceeds capacity \(lowLevelMesh.descriptor.indexCapacity)")
             throw ShapEMeshAdapterError.capacityExceeded
         }
 

@@ -1,11 +1,15 @@
 #if os(visionOS)
 import RealityKit
 import SwiftUI
+import os
 import simd
 import ShapERuntime
 
 @Observable
+/// Mirrors `AppModel` generation records into the immersive RealityKit scene.
+/// Sync is coalesced: concurrent callers set `needsResync` instead of dropping updates.
 class ImmersiveViewModel {
+    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.visionarydevops.Mesquette", category: "immersive")
     
     // Small hop onto the table — not a leap from the user's head.
     let jumpDuration: TimeInterval = 0.7
@@ -70,7 +74,7 @@ class ImmersiveViewModel {
                             let needed = max(faceCount, try meshResult.vertices.float32Values().count / 3)
                             let newCapacity = Int(Double(needed) * 1.25) + 1024
                             
-                            print("[ImmersiveViewModel] 🔄 Reallocating LowLevelMesh capacity to \(newCapacity) verts/indices")
+                            Self.logger.debug("Reallocating LowLevelMesh capacity to \(newCapacity) verts/indices")
                             
                             let newLowLevelMesh = try ShapEMeshAdapter.createLowLevelMesh(
                                 vertexCapacity: newCapacity,
@@ -179,7 +183,7 @@ class ImmersiveViewModel {
                         )
                     }
                 } catch {
-                    print("Failed to sync mesh for record \(record.id): \(error)")
+                    Self.logger.error("Failed to sync mesh for record \(record.id, privacy: .public): \(error.localizedDescription, privacy: .public)")
                 }
             }
             // If another caller requested sync while we were working, re-read
@@ -273,7 +277,7 @@ class ImmersiveViewModel {
             entity.playAnimation(sequence)
             
         } catch {
-            print("Failed to generate jump animation: \(error)")
+            Self.logger.error("Failed to generate jump animation: \(error.localizedDescription, privacy: .public)")
             // Fallback
             entity.transform = endTransform
         }
