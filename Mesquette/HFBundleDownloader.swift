@@ -15,12 +15,16 @@ nonisolated enum HFBundleError: Error, LocalizedError, Sendable {
     case malformedChecksums(String)
     case missingFile(String)
     case checksumMismatch(String)
+    case httpStatus(Int, String)
+    case insufficientCoverage(String)
 
     var errorDescription: String? {
         switch self {
         case .malformedChecksums(let line): return "Malformed checksums.sha256 line: \(line)"
         case .missingFile(let path): return "Downloaded bundle is missing \(path)."
         case .checksumMismatch(let path): return "Checksum mismatch for \(path)."
+        case .httpStatus(let code, let path): return "HTTP \(code) downloading \(path)."
+        case .insufficientCoverage(let what): return "Published bundle manifest is incomplete: \(what)."
         }
     }
 }
@@ -110,6 +114,11 @@ nonisolated enum HFBundleDownloader {
             .appendingPathComponent("huggingface", isDirectory: true)
     }
 
+    static var endpoint: String {
+        let raw = ProcessInfo.processInfo.environment["HF_ENDPOINT"] ?? "https://huggingface.co"
+        return raw.hasSuffix("/") ? String(raw.dropLast()) : raw
+    }
+
     static func snapshotURL() -> URL {
         downloadBase.appendingPathComponent("models", isDirectory: true)
             .appendingPathComponent(repoID, isDirectory: true)
@@ -194,6 +203,7 @@ nonisolated enum HFBundleDownloader {
         )
         let all = try checksumEntries(in: String(contentsOf: sumsURL, encoding: .utf8))
         let wanted = entries(all, within: scope)
+        try validateCoverage(entries: all, scope: scope)
         try await fetchFiles(
             repoID: repoID, revision: revision,
             entries: wanted, into: bundle, progress: progress
@@ -203,6 +213,20 @@ nonisolated enum HFBundleDownloader {
         try Data().write(to: stampURL(in: bundle, scope: scope))
         return bundle
     }
+    /// The manifest must actually cover what the scope will run on; an empty
+    /// or truncated `checksums.sha256` must fail here, never reach the stamp.
+    static func validateCoverage(entries all: [ChecksumEntry], scope: HFBundleScope) throws {
+        guard !all.isEmpty else { throw HFBundleError.insufficientCoverage("empty checksums.sha256") }
+        guard all.contains(where: { $0.path == "manifest.json" }) else {
+            throw HFBundleError.insufficientCoverage("missing manifest.json")
+        }
+        for family in families(for: scope) {
+            guard all.contains(where: { $0.path.hasPrefix(family + "/") }) else {
+                throw HFBundleError.insufficientCoverage("no files for family \(family)")
+            }
+        }
+    }
+
     // MARK: - Parallel fetch engine
 
     /// Concurrent workers; the previous HubApi snapshot loop was strictly
@@ -236,18 +260,23 @@ nonisolated enum HFBundleDownloader {
     private final class DownloadDelegate: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
         struct Job {
             let destination: URL
+            let path: String
             let continuation: CheckedContinuation<Void, Error>
         }
         private let lock = NSLock()
         private var jobs: [Int: Job] = [:]
         var onBytes: (@Sendable (Int64) -> Void)?
 
-        func register(taskID: Int, destination: URL, continuation: CheckedContinuation<Void, Error>) {
-            lock.lock(); jobs[taskID] = Job(destination: destination, continuation: continuation); lock.unlock()
+        func register(taskID: Int, destination: URL, path: String, continuation: CheckedContinuation<Void, Error>) {
+            lock.lock(); jobs[taskID] = Job(destination: destination, path: path, continuation: continuation); lock.unlock()
         }
         private func take(_ taskID: Int) -> Job? {
             lock.lock(); defer { lock.unlock() }
             return jobs.removeValue(forKey: taskID)
+        }
+        private func peek(_ taskID: Int) -> Job? {
+            lock.lock(); defer { lock.unlock() }
+            return jobs[taskID]
         }
         func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask,
                         didWriteData bytesWritten: Int64, totalBytesWritten: Int64,
@@ -256,7 +285,16 @@ nonisolated enum HFBundleDownloader {
         }
         func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask,
                         didFinishDownloadingTo location: URL) {
-            guard let job = jobs[downloadTask.taskIdentifier] else { return }
+            guard let job = peek(downloadTask.taskIdentifier) else { return }
+            // A non-2xx body (e.g. a 404 error page) must never be moved into
+            // place: digests would catch most cases, but `checksums.sha256`
+            // itself has no digest to catch it with.
+            if let http = downloadTask.response as? HTTPURLResponse,
+               !(200..<300).contains(http.statusCode) {
+                take(downloadTask.taskIdentifier)?.continuation.resume(
+                    throwing: HFBundleError.httpStatus(http.statusCode, job.path))
+                return
+            }
             do {
                 try FileManager.default.createDirectory(
                     at: job.destination.deletingLastPathComponent(), withIntermediateDirectories: true)
@@ -275,7 +313,7 @@ nonisolated enum HFBundleDownloader {
     }
 
     private static func resolveURL(repoID: String, revision: String, path: String) -> URL {
-        var url = URL(string: "https://huggingface.co/\(repoID)/resolve/\(revision)")!
+        var url = URL(string: "\(endpoint)/\(repoID)/resolve/\(revision)")!
         for component in path.split(separator: "/") {
             url.appendPathComponent(String(component))
         }
@@ -285,7 +323,7 @@ nonisolated enum HFBundleDownloader {
     /// Best-effort per-file sizes for byte-accurate progress; failures only
     /// degrade progress weighting, never correctness (digests still gate).
     private static func fetchSizes(repoID: String, revision: String) async -> [String: Int64] {
-        guard let url = URL(string: "https://huggingface.co/api/models/\(repoID)/revision/\(revision)?blobs=true"),
+        guard let url = URL(string: "\(endpoint)/api/models/\(repoID)/revision/\(revision)?blobs=true"),
               let (data, _) = try? await URLSession.shared.data(from: url),
               let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               let siblings = root["siblings"] as? [[String: Any]] else { return [:] }
@@ -340,7 +378,7 @@ nonisolated enum HFBundleDownloader {
                         }
                         try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
                             let task = session.downloadTask(with: resolveURL(repoID: repoID, revision: revision, path: entry.path))
-                            delegate.register(taskID: task.taskIdentifier, destination: dest, continuation: cont)
+                            delegate.register(taskID: task.taskIdentifier, destination: dest, path: entry.path, continuation: cont)
                             task.resume()
                         }
                         if !entry.digest.isEmpty {

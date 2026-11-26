@@ -51,7 +51,7 @@
     { "id": "CompiledPrompt", "type": "entity", "path": "Mesquette/Director/CompiledPrompt.swift", "summary": "Compile output; normalized() caps 6 and drops ground-like parts." },
     { "id": "ShapERuntimeStore", "type": "runtime", "path": "Mesquette/ShapERuntimeStore.swift", "summary": "Actor load of Shap-E; loadEpoch clears failed tasks." },
     { "id": "RuntimeAssetLocator", "type": "runtime", "path": "Mesquette/RuntimeAssetLocator.swift", "summary": "Resolution order bundled → Background Assets (team-ID gated; BA traps without one) → HF cache." },
-    { "id": "HFBundleDownloader", "type": "runtime", "path": "Mesquette/HFBundleDownloader.swift", "summary": "Pinned HF snapshots via parallel fetcher (shap-e-mlx d71f70a, triposr-mlx 17a0c52); SHA-256 verify + stamp." },
+    { "id": "HFBundleDownloader", "type": "runtime", "path": "Mesquette/HFBundleDownloader.swift", "summary": "Pinned HF snapshots via parallel fetcher (shap-e-mlx d71f70a, triposr-mlx 17a0c52); HTTP-status + family-coverage gates, SHA-256 verify + stamp." },
     { "id": "TripoSRStore", "type": "runtime", "path": "Mesquette/TripoSRStore.swift", "summary": "Actor: builds ThreeDGenerationRuntime (.tripoSR) from verified weights; failed loads not cached." },
     { "id": "MeshExporter", "type": "export", "path": "Mesquette/MeshExporter.swift", "summary": "OBJ+MTL ZIP, USDZ, validatedFaceIndices." },
     { "id": "ShapEMeshAdapter", "type": "viewport", "path": "Mesquette/ShapEMeshAdapter.swift", "summary": "visionOS MeshResult to RealityKit; shares face validation." },

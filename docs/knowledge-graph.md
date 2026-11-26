@@ -260,7 +260,7 @@ DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer \
 | Test file | Covers |
 |---|---|
 | `PinFillTests` | Bind/unbind, Yorkshire cast, 6 vs 21 leftover, identity, lantern height, amber bottle, pinIndex extras, extras slider max 15 |
-| `HFBundleDownloaderTests` | Pinned revisions (Shap-E + TripoSR), scope globs, checksum parse/filter, fail-closed verify, model picker forces image for TripoSR |
+| `HFBundleDownloaderTests` | Pinned revisions (Shap-E + TripoSR), scope globs, checksum parse/filter, coverage gate, fail-closed verify, model picker forces image for TripoSR |
 | `ImageBackgroundRemovalTests` | TripoSR foreground prep: alpha bounds, square-canvas 0.85 ratio |
 | `DirectorLayoutEngineTests` | `packRecords` by pinID, locked pins, fills expand (non-pin path only) |
 | `DirectorSessionTests` | stamp does not leak scale/material onto unmatched prompts |
