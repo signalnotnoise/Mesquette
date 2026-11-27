@@ -22,10 +22,10 @@
     {
       "identity" : "shap-e-mlx-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/signalnotnoise/shap-e-mlx-swift",
+      "location" : "https://github.com/signalnotnoise/shap-e-mlx-swift.git",
       "state" : {
         "branch" : "main",
-        "revision" : "7ed124d1a9b408a84d3b96f0df66c53dd48b3de6"
+        "revision" : "962403e2ccef75a10c084c09c70c92899e93d328"
       }
     },
     {

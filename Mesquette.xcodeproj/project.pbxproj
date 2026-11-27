@@ -771,8 +771,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/signalnotnoise/shap-e-mlx-swift";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.0;
 			};
 		};
 		C7F00D112FA2CB950050C230 /* XCRemoteSwiftPackageReference "mlx-3d-runtime-swift" */ = {
