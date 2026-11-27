@@ -2,7 +2,7 @@
 // Mesquette — macOS only
 
 #if os(macOS)
-import RuntimeWrapper
+import MLX3DRuntime
 import SwiftUI
 
 /// Root macOS layout: 3-D SceneKit preview (left) + chat panel (right).

@@ -28,15 +28,16 @@ from `signalNotNoise/triposr-mlx`, checksum-verified).
 
 ## Getting the code
 
-Mesquette depends on the `ShapERuntime` Swift package from
-[apple-mlx-foundations](https://github.com/signalnotnoise/apple-mlx-foundations),
-vendored as a git submodule at `Vendor/apple-mlx-foundations` and pinned
-to foundations **main** (`3de822836cf7358125e028bf4d75818ed6dbaf7a`, post-v0.1.0 incl. TripoSR finish + HTTPS submodule URLs). Xcode
-references it as a local package at
-`Vendor/apple-mlx-foundations/shap_e/swift`.
+Mesquette builds on three standalone Swift packages (all MIT):
+[mlx-3d-runtime-swift](https://github.com/signalnotnoise/mlx-3d-runtime-swift)
+(unified generation session + mesh values),
+[shap-e-mlx-swift](https://github.com/signalnotnoise/shap-e-mlx-swift)
+(`ShapERuntime` types used across the app), and
+[triposr-mlx-swift](https://github.com/signalnotnoise/triposr-mlx-swift)
+(transitively, via the unified runtime). There are no submodules.
 
 ```sh
-git clone --recurse-submodules https://github.com/signalnotnoise/Mesquette.git
+git clone https://github.com/signalnotnoise/Mesquette.git
 ```
 
 ## Model weights (not in git, not in the app)

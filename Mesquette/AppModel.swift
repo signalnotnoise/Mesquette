@@ -7,7 +7,7 @@
 
 import SwiftUI
 import RealityKit
-import RuntimeWrapper
+import MLX3DRuntime
 import ShapERuntime
 
 /// Maintains app-wide state shared across both platforms.
@@ -20,8 +20,8 @@ class AppModel {
 
     /// Selected generation backend. TripoSR is image-to-3D only, so picking
     /// it forces image input; text/pin flows stay on Shap-E. Persisted.
-    var generationModel: ThreeDGenerationModel =
-        ThreeDGenerationModel(rawValue: UserDefaults.standard.string(forKey: "Mesquette.generationModel") ?? "") ?? .shapE {
+    var generationModel: MLX3DBackend =
+        MLX3DBackend(rawValue: UserDefaults.standard.string(forKey: "Mesquette.generationModel") ?? "") ?? .shapE {
         didSet {
             UserDefaults.standard.set(generationModel.rawValue, forKey: "Mesquette.generationModel")
             if generationModel == .tripoSR, inputMode == .text {
@@ -291,7 +291,7 @@ class AppModel {
         guard !RuntimeLaunchContext.isXcodePreview else { return }
         directorAvailability = DirectorAvailabilityChecker.current()
         Task {
-            await ShapERuntimeStore.shared.preload()
+            await GenerationSessionStore.shared.preload()
         }
     }
 

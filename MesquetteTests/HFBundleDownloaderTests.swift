@@ -1,4 +1,4 @@
-import RuntimeWrapper
+import MLX3DRuntime
 import XCTest
 @testable import Mesquette
 
@@ -96,7 +96,7 @@ final class HFBundleDownloaderTests: XCTestCase {
 final class ModelSelectionTests: XCTestCase {
     func testDefaultModelIsShapEOrPersisted() {
         let app = AppModel()
-        XCTAssertTrue([ThreeDGenerationModel.shapE, .tripoSR].contains(app.generationModel))
+        XCTAssertTrue([MLX3DBackend.shapE, .tripoSR].contains(app.generationModel))
     }
 
     func testSelectingTripoSRForcesImageMode() {

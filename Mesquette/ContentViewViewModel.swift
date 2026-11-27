@@ -1,6 +1,6 @@
 import SwiftUI
 import RealityKit
-import RuntimeWrapper
+import MLX3DRuntime
 import ShapERuntime
 import MLX
 import os
@@ -95,13 +95,14 @@ class ContentViewModel {
                 try Task.checkCancellation()
                 // `generate` is @concurrent (off the main actor). IOGPU requires the
                 // Metal/MLX stream to be created while the app is in the foreground.
-                await ShapERuntimeStore.shared.prepareForGPUWork()
+                await GenerationSessionStore.shared.prepareForGPUWork()
                 try Task.checkCancellation()
                 let generationModel = appModel.generationModel
-                // Shap-E keeps the full-fidelity direct runtime; TripoSR goes
-                // through the RuntimeWrapper facade (ThreeDGenerationRuntime).
-                let runtime: ShapERuntime? = generationModel == .shapE
-                    ? try await ShapERuntimeStore.shared.runtime() : nil
+                // Both backends run through the shared MLX3DSession; Shap-E
+                // must be loaded before its first generate.
+                if generationModel == .shapE {
+                    try await GenerationSessionStore.shared.loadShapE()
+                }
                 try Task.checkCancellation()
 
                 let prompt         = appModel.prompt
@@ -120,7 +121,7 @@ class ContentViewModel {
 
                 // @Sendable so this can cross into MLX `withError` (which is @concurrent).
                 // UI updates hop back to the main actor inside the Task.
-                let progressHandler: @Sendable (String, Int, Int, [ShapEMeshResult]?) -> Void = { [recordIDs] phase, currentStep, totalSteps, partialMeshes in
+                let progressHandler: @Sendable (String, Int, Int, [MeshResult]?) -> Void = { [recordIDs] phase, currentStep, totalSteps, partialMeshes in
                     Task { @MainActor in
                         // Normalize empty phase (runtime used "" for non-partial ticks) to sampling.
                         let resolvedPhase = phase.isEmpty ? "sampling" : phase
@@ -160,7 +161,7 @@ class ContentViewModel {
                                 in: appModel,
                                 ids: recordIDs,
                                 status: .generating,
-                                meshResults: partials.map(\.meshResult),
+                                meshResults: partials,
                                 persistFinal: false
                             )
                         }
@@ -171,7 +172,7 @@ class ContentViewModel {
                     appModel.progressPhaseLabel = generationModel == .tripoSR
                         ? "Loading TripoSR model…" : "Downloading image model…"
                     if generationModel == .shapE {
-                        try await ShapERuntimeStore.shared.prepareImageWeights()
+                        try await GenerationSessionStore.shared.prepareImageWeights()
                     }
 #if os(macOS)
                     guard let img = appModel.inputImage, let cgImage = img.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
@@ -205,51 +206,49 @@ class ContentViewModel {
                             Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.visionarydevops.Mesquette", category: "image").error("Foreground cutout failed, using unprepared image: \(error.localizedDescription, privacy: .public)")
                             preparedImage = nil
                         }
-                        let tripo = try await TripoSRStore.shared.tripoRuntime()
-                        meshResults = try await withMLXError {
-                            try await tripo.generate(
-                                image: preparedImage ?? cgImage,
+                        let tripoMesh = try await withMLXError {
+                            try await GenerationSessionStore.shared.tripoMesh(
+                                cgImage: preparedImage ?? cgImage,
                                 useMetalMarchingCubes: useMetalMarchingCubes,
                                 progress: progressHandler
-                            ).map(\.meshResult)
-                        }
-                    } else if let runtime {
-                        meshResults = try await withMLXError {
-                            try await runtime.generate(
-                                image:             cgImage,
-                                batchSize:         batchSize,
-                                guidanceScale:     guidanceScale,
-                                numInferenceSteps: inferenceSteps,
-                                gridSize:          gridSize,
-                                queryBatchSize:    queryBatch,
-                                seed:              seed,
-                                useMetalMarchingCubes: useMetalMarchingCubes,
-                                progressInterval:  progressInterval,
-                                progress:          progressHandler
                             )
-                        }.map(\.meshResult)
+                        }
+                        meshResults = [tripoMesh]
                     } else {
-                        throw ShapERuntimeLoadError.bundleNotFound
+                        meshResults = try await withMLXError {
+                            try await GenerationSessionStore.shared.shapEImageMeshes(
+                                cgImage: cgImage,
+                                batchSize: batchSize,
+                                guidanceScale: guidanceScale,
+                                numInferenceSteps: inferenceSteps,
+                                gridSize: gridSize,
+                                queryBatchSize: queryBatch,
+                                seed: seed,
+                                useMetalMarchingCubes: useMetalMarchingCubes,
+                                progressInterval: progressInterval,
+                                progress: progressHandler
+                            )
+                        }
                     }
-                } else if let runtime {
+                } else if generationModel == .shapE {
                     meshResults = try await withMLXError {
-                        try await runtime.generate(
-                            prompt:            prompt,
-                            batchSize:         batchSize,
-                            guidanceScale:     guidanceScale,
+                        try await GenerationSessionStore.shared.textMeshes(
+                            prompt: prompt,
+                            batchSize: batchSize,
+                            guidanceScale: guidanceScale,
                             numInferenceSteps: inferenceSteps,
-                            gridSize:          gridSize,
-                            queryBatchSize:    queryBatch,
-                            seed:              seed,
+                            gridSize: gridSize,
+                            queryBatchSize: queryBatch,
+                            seed: seed,
                             useMetalMarchingCubes: useMetalMarchingCubes,
-                            progressInterval:  progressInterval,
-                            progress:          progressHandler
+                            progressInterval: progressInterval,
+                            progress: progressHandler
                         )
-                    }.map(\.meshResult)
+                    }
                 } else {
                     // TripoSR has no text path; the picker forces image mode,
                     // so this is unreachable unless state was restored oddly.
-                    throw ThreeDGenerationRuntimeError.promptUnsupported(.tripoSR)
+                    throw GenerationLoadError.bundleNotFound
                 }
 
                 appModel.progress = 0.98

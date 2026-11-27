@@ -14,6 +14,7 @@
 		933ABE352F8DA9CB002518F6 /* MLXLinalg in Frameworks */ = {isa = PBXBuildFile; productRef = 933ABE342F8DA9CB002518F6 /* MLXLinalg */; };
 		933ABE372F8DA9CB002518F6 /* MLXNN in Frameworks */ = {isa = PBXBuildFile; productRef = 933ABE362F8DA9CB002518F6 /* MLXNN */; };
 		933ABE3A2F8DA9F7002518F6 /* ShapERuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 933ABE392F8DA9F7002518F6 /* ShapERuntime */; };
+		C7F00D132FA2CB950050C230 /* MLX3DRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = C7F00D122FA2CB950050C230 /* MLX3DRuntime */; };
 		93A4707A2F9921FC00662A91 /* bpe_simple_vocab_16e6.txt.gz in Resources */ = {isa = PBXBuildFile; fileRef = 93A470792F9921FC00662A91 /* bpe_simple_vocab_16e6.txt.gz */; };
 		B0A5E70A2F8DA96D002518F6 /* AssetDownloader.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B0A5E7012F8DA96D002518F6 /* AssetDownloader.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -103,7 +104,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B7F00D132FA2CB950050C230 /* RuntimeWrapper in Frameworks */,
+				C7F00D132FA2CB950050C230 /* MLX3DRuntime in Frameworks */,
 				933ABE3A2F8DA9F7002518F6 /* ShapERuntime in Frameworks */,
 				933ABE372F8DA9CB002518F6 /* MLXNN in Frameworks */,
 				933ABE352F8DA9CB002518F6 /* MLXLinalg in Frameworks */,
@@ -190,7 +191,7 @@
 				933ABE342F8DA9CB002518F6 /* MLXLinalg */,
 				933ABE362F8DA9CB002518F6 /* MLXNN */,
 				933ABE392F8DA9F7002518F6 /* ShapERuntime */,
-				B7F00D122FA2CB950050C230 /* RuntimeWrapper */,
+				C7F00D122FA2CB950050C230 /* MLX3DRuntime */,
 			);
 			productName = Mesquette;
 			productReference = 933ABE062F8DA96D002518F6 /* Mesquette.app */;
@@ -274,8 +275,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				933ABE2D2F8DA9CB002518F6 /* XCRemoteSwiftPackageReference "mlx-swift" */,
-				933ABE382F8DA9F7002518F6 /* XCLocalSwiftPackageReference "Vendor/apple-mlx-foundations/shap_e/swift" */,
-				B7F00D112FA2CB950050C230 /* XCLocalSwiftPackageReference "Vendor/apple-mlx-foundations/runtime_wrapper" */,
+				933ABE382F8DA9F7002518F6 /* XCRemoteSwiftPackageReference "shap-e-mlx-swift" */,
+				C7F00D112FA2CB950050C230 /* XCRemoteSwiftPackageReference "mlx-3d-runtime-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 933ABE072F8DA96D002518F6 /* Products */;
@@ -766,13 +767,21 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		933ABE382F8DA9F7002518F6 /* XCLocalSwiftPackageReference "Vendor/apple-mlx-foundations/shap_e/swift" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = "Vendor/apple-mlx-foundations/shap_e/swift";
+		933ABE382F8DA9F7002518F6 /* XCRemoteSwiftPackageReference "shap-e-mlx-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/signalnotnoise/shap-e-mlx-swift";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
 		};
-		B7F00D112FA2CB950050C230 /* XCLocalSwiftPackageReference "Vendor/apple-mlx-foundations/runtime_wrapper" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = "Vendor/apple-mlx-foundations/runtime_wrapper";
+		C7F00D112FA2CB950050C230 /* XCRemoteSwiftPackageReference "mlx-3d-runtime-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/signalnotnoise/mlx-3d-runtime-swift";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -819,13 +828,13 @@
 		};
 		933ABE392F8DA9F7002518F6 /* ShapERuntime */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 933ABE382F8DA9F7002518F6 /* XCLocalSwiftPackageReference "Vendor/apple-mlx-foundations/shap_e/swift" */;
+			package = 933ABE382F8DA9F7002518F6 /* XCRemoteSwiftPackageReference "shap-e-mlx-swift" */;
 			productName = ShapERuntime;
 		};
-		B7F00D122FA2CB950050C230 /* RuntimeWrapper */ = {
+		C7F00D122FA2CB950050C230 /* MLX3DRuntime */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = B7F00D112FA2CB950050C230 /* XCLocalSwiftPackageReference "Vendor/apple-mlx-foundations/runtime_wrapper" */;
-			productName = RuntimeWrapper;
+			package = C7F00D112FA2CB950050C230 /* XCRemoteSwiftPackageReference "mlx-3d-runtime-swift" */;
+			productName = MLX3DRuntime;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

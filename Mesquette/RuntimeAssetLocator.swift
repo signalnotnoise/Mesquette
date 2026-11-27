@@ -126,7 +126,7 @@ enum RuntimeAssetLocator {
     }
 #else
     private static func hostedRuntimeURL(includingImage: Bool) async throws -> URL {
-        throw ShapERuntimeLoadError.bundleNotFound
+        throw GenerationLoadError.bundleNotFound
     }
 #endif
 }

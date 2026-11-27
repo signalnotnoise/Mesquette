@@ -3,7 +3,7 @@
 
 import SwiftUI
 import RealityKit
-import RuntimeWrapper
+import MLX3DRuntime
 import ShapERuntime
 import MLX
 #if canImport(UIKit)
@@ -164,9 +164,9 @@ extension ContentViewModel {
 
         do {
             try Task.checkCancellation()
-            await ShapERuntimeStore.shared.prepareForGPUWork()
+            await GenerationSessionStore.shared.prepareForGPUWork()
             try Task.checkCancellation()
-            let runtime = try await ShapERuntimeStore.shared.runtime()
+            try await GenerationSessionStore.shared.loadShapE()
             try Task.checkCancellation()
 
             let guidanceScale  = Float(appModel.guidanceScale)
@@ -178,7 +178,7 @@ extension ContentViewModel {
             let applyLivePartials = appModel.enableLivePartials
             let prefix = "\(partTitle) \(setIndex + 1)/\(setCount)"
 
-            let progressHandler: @Sendable (String, Int, Int, [ShapEMeshResult]?) -> Void = { [recordIDs] phase, currentStep, totalSteps, partialMeshes in
+            let progressHandler: @Sendable (String, Int, Int, [MeshResult]?) -> Void = { [recordIDs] phase, currentStep, totalSteps, partialMeshes in
                 Task { @MainActor in
                     let resolvedPhase = phase.isEmpty ? "sampling" : phase
                     let weight = self.phaseWeight(resolvedPhase)
@@ -210,7 +210,7 @@ extension ContentViewModel {
                             in: appModel,
                             ids: recordIDs,
                             status: .generating,
-                            meshResults: partials.map(\.meshResult),
+                            meshResults: partials,
                             persistFinal: false
                         )
                     }
@@ -218,17 +218,17 @@ extension ContentViewModel {
             }
 
             let result = try await withMLXError {
-                try await runtime.generate(
-                    prompt:            promptText,
-                    batchSize:         1,
-                    guidanceScale:     guidanceScale,
+                try await GenerationSessionStore.shared.textMeshes(
+                    prompt: promptText,
+                    batchSize: 1,
+                    guidanceScale: guidanceScale,
                     numInferenceSteps: inferenceSteps,
-                    gridSize:          gridSize,
-                    queryBatchSize:    queryBatch,
-                    seed:              seed,
+                    gridSize: gridSize,
+                    queryBatchSize: queryBatch,
+                    seed: seed,
                     useMetalMarchingCubes: useMetalMarchingCubes,
-                    progressInterval:  progressInterval,
-                    progress:          progressHandler
+                    progressInterval: progressInterval,
+                    progress: progressHandler
                 )
             }
 
@@ -236,7 +236,7 @@ extension ContentViewModel {
                 in: appModel,
                 ids: recordIDs,
                 status: .completed,
-                meshResults: result.map(\.meshResult),
+                meshResults: result,
                 persistFinal: true
             )
             return false

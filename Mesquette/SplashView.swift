@@ -209,7 +209,7 @@ struct SplashView: View {
         await playIntro()
 
         let load = Task {
-            await ShapERuntimeStore.shared.waitUntilLoadFinishes { fraction in
+            await GenerationSessionStore.shared.waitUntilLoadFinishes { fraction in
                 Task { @MainActor in
                     downloadFraction = fraction
                     if fraction > 0 { showPreparing = true }
