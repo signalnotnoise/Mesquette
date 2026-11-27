@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/signalnotnoise/mlx-3d-runtime-swift",
       "state" : {
-        "branch" : "main",
-        "revision" : "a48205033121845d77fa2424b4d57f492490327e"
+        "revision" : "1dcae6faca8d962c08a46247d12587b00adb9afe",
+        "version" : "0.1.0"
       }
     },
     {
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/signalnotnoise/shap-e-mlx-swift.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "962403e2ccef75a10c084c09c70c92899e93d328"
+        "revision" : "962403e2ccef75a10c084c09c70c92899e93d328",
+        "version" : "0.1.0"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/signalnotnoise/triposr-mlx-swift.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "51994056febf3be5ed726e89de169037a2fbf6a6"
+        "revision" : "51994056febf3be5ed726e89de169037a2fbf6a6",
+        "version" : "0.1.0"
       }
     }
   ],
