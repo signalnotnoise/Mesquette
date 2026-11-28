@@ -141,7 +141,7 @@
   },
   "verify": {
     "macBuild": "DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer xcodebuild -scheme Mesquette -destination 'platform=macOS,arch=arm64' build",
-    "tests": "MesquetteTests run on macOS via the shared Mesquette scheme (101 tests); visionOS build-for-testing compiles.",
+    "tests": "MesquetteTests run on macOS via the shared Mesquette scheme (109 tests); visionOS build-for-testing compiles.",
     "doNot": "Do not score Shap-E mesh quality in CI."
   }
 }

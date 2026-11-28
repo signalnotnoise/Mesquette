@@ -249,7 +249,7 @@ Table axes: **+X right, +Z toward the user**, Y up. Pin Y is height above the ta
 
 ## 11. Tests and how to verify
 
-Test target runs on macOS via the shared scheme (`SUPPORTED_PLATFORMS = macosx xros xrsimulator`): `xcodebuild test -scheme Mesquette -destination 'platform=macOS,arch=arm64'` (101 tests). visionOS build-for-testing also compiles. **Verified compile path:**
+Test target runs on macOS via the shared scheme (`SUPPORTED_PLATFORMS = macosx xros xrsimulator`): `xcodebuild test -scheme Mesquette -destination 'platform=macOS,arch=arm64'` (109 tests). visionOS build-for-testing also compiles. **Verified compile path:**
 
 ```
 DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer \
