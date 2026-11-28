@@ -11,8 +11,8 @@
   },
   "packages": [
     { "id": "mlx-swift", "kind": "remote", "url": "https://github.com/ml-explore/mlx-swift" },
-    { "id": "ShapERuntime", "kind": "submodule", "path": "Vendor/apple-mlx-foundations/shap_e/swift", "url": "https://github.com/signalnotnoise/apple-mlx-foundations", "pinned": "3de822836cf7358125e028bf4d75818ed6dbaf7a" },
-    { "id": "RuntimeWrapper", "kind": "submodule", "path": "Vendor/apple-mlx-foundations/runtime_wrapper", "url": "https://github.com/signalnotnoise/apple-mlx-foundations", "pinned": "3de822836cf7358125e028bf4d75818ed6dbaf7a" },
+    { "id": "ShapERuntime", "kind": "remote-package", "path": "(SwiftPM) shap-e-mlx-swift", "url": "https://github.com/signalnotnoise/shap-e-mlx-swift", "pinned": "branch main (pre-tag)" },
+    { "id": "MLX3DRuntime", "kind": "remote-package", "path": "(SwiftPM) mlx-3d-runtime-swift", "url": "https://github.com/signalnotnoise/mlx-3d-runtime-swift", "pinned": "branch main (pre-tag)" },
     { "id": "RealityKitContent", "kind": "local", "path": "Packages/RealityKitContent" }
   ],
   "invariants": [
@@ -27,7 +27,7 @@
     { "id": "ground-not-mesh", "text": "Ground/sea/grass/sky are never meshes. Named forest/meadow patches are one closed mound; pin refit does not expand fills." },
     { "id": "two-fm-jobs", "text": "contentTagging = named objects + height. default model = leftover extras. Compile is a separate entry point." },
     { "id": "no-agent-loop", "text": "No until-complete loop. No LLM vision-evaluate of meshes." },
-    { "id": "load-retry", "text": "Failed ShapERuntimeStore loadTask must be cleared so Generate can retry." },
+    { "id": "load-retry", "text": "Failed GenerationSessionStore shapELoadTask must be cleared so Generate can retry." },
     { "id": "pin-ownership", "text": "Pin.recordID and record.pinID stay in sync. Unbind only if the pin still belongs to that record." },
     { "id": "triposr-image-only", "text": "TripoSR is image-to-3D only. Picker forces image mode; text, Compile, and pin scenes always run on Shap-E." }
   ],
@@ -49,10 +49,9 @@
     { "id": "PinAssignment", "type": "entity", "path": "Mesquette/Director/PinAssignment.swift", "summary": "One Shap-E job bound to pinID with inventoryID and route." },
     { "id": "GenerationRecord", "type": "entity", "path": "Mesquette/GenerationRecord.swift", "summary": "History mesh + pinID + inventoryID + planRoute + offsets." },
     { "id": "CompiledPrompt", "type": "entity", "path": "Mesquette/Director/CompiledPrompt.swift", "summary": "Compile output; normalized() caps 6 and drops ground-like parts." },
-    { "id": "ShapERuntimeStore", "type": "runtime", "path": "Mesquette/ShapERuntimeStore.swift", "summary": "Actor load of Shap-E; loadEpoch clears failed tasks." },
+    { "id": "GenerationSessionStore", "type": "runtime", "path": "Mesquette/GenerationSessionStore.swift", "summary": "Actor over MLX3DSession: Shap-E load epoch/retry, observable download progress, Mesh->MeshResult conversion." },
     { "id": "RuntimeAssetLocator", "type": "runtime", "path": "Mesquette/RuntimeAssetLocator.swift", "summary": "Resolution order bundled → Background Assets (team-ID gated; BA traps without one) → HF cache." },
     { "id": "HFBundleDownloader", "type": "runtime", "path": "Mesquette/HFBundleDownloader.swift", "summary": "Pinned HF snapshots via parallel fetcher (shap-e-mlx d71f70a, triposr-mlx 17a0c52); HTTP-status + family-coverage gates, SHA-256 verify + stamp." },
-    { "id": "TripoSRStore", "type": "runtime", "path": "Mesquette/TripoSRStore.swift", "summary": "Actor: builds ThreeDGenerationRuntime (.tripoSR) from verified weights; failed loads not cached." },
     { "id": "MeshExporter", "type": "export", "path": "Mesquette/MeshExporter.swift", "summary": "OBJ+MTL ZIP, USDZ, validatedFaceIndices." },
     { "id": "ShapEMeshAdapter", "type": "viewport", "path": "Mesquette/ShapEMeshAdapter.swift", "summary": "visionOS MeshResult to RealityKit; shares face validation." },
     { "id": "SceneKitStudio", "type": "viewport", "path": "Mesquette/macOS/SceneKitStudio.swift", "summary": "Plant mesh at pin without rest-pose sit; shared makeGeometry for macOS+iPad previews." },
@@ -74,7 +73,7 @@
     { "from": "ContentViewModel", "to": "ContentViewModelSet", "rel": "contains" },
     { "from": "Mac3DPreview", "to": "Mac3DPreviewCoordinator", "rel": "contains" },
     { "from": "ContentViewModel", "to": "DirectorStaging", "rel": "calls", "note": "resolvedCast, namedPinJobs, fallbackPinJobs" },
-    { "from": "ContentViewModel", "to": "ShapERuntimeStore", "rel": "calls", "note": "runtime() per job" },
+    { "from": "ContentViewModel", "to": "GenerationSessionStore", "rel": "calls", "note": "session generation per job" },
     { "from": "ContentViewModel", "to": "DirectorLayoutEngine", "rel": "calls", "note": "packRecords after meshes" },
     { "from": "DirectorClient", "to": "FMTagging", "rel": "uses", "note": "tagSceneCast" },
     { "from": "DirectorClient", "to": "FMDefault", "rel": "uses", "note": "planPins extras, compile, invent" },
@@ -87,11 +86,10 @@
     { "from": "AppModel", "to": "PlacementPin", "rel": "owns" },
     { "from": "AppModel", "to": "GenerationRecord", "rel": "owns", "note": "generationDict two-sided bind" },
     { "from": "GenerationRecord", "to": "PlacementPin", "rel": "bound-by", "note": "pinID <-> recordID" },
-    { "from": "ShapERuntimeStore", "to": "ShapE", "rel": "loads" },
-    { "from": "RuntimeAssetLocator", "to": "ShapERuntimeStore", "rel": "feeds" },
+    { "from": "GenerationSessionStore", "to": "ShapE", "rel": "loads" },
+    { "from": "RuntimeAssetLocator", "to": "GenerationSessionStore", "rel": "feeds" },
     { "from": "RuntimeAssetLocator", "to": "HFBundleDownloader", "rel": "falls back to" },
-    { "from": "TripoSRStore", "to": "HFBundleDownloader", "rel": "resolves weights via" },
-    { "from": "ContentViewModel", "to": "TripoSRStore", "rel": "calls", "note": "image generate when generationModel == .tripoSR" },
+    { "from": "GenerationSessionStore", "to": "HFBundleDownloader", "rel": "resolves weights via" },
     { "from": "ShapE", "to": "GenerationRecord", "rel": "writes", "note": "MeshResult" },
     { "from": "GenerationRecord", "to": "SceneKitStudio", "rel": "renders-on", "note": "macOS/iOS" },
     { "from": "GenerationRecord", "to": "ShapEMeshAdapter", "rel": "renders-on", "note": "visionOS" },
@@ -143,7 +141,7 @@
   },
   "verify": {
     "macBuild": "DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer xcodebuild -scheme Mesquette -destination 'platform=macOS,arch=arm64' build",
-    "tests": "MesquetteTests run on macOS via the shared Mesquette scheme (101 tests); visionOS build-for-testing compiles.",
+    "tests": "MesquetteTests run on macOS via the shared Mesquette scheme (109 tests); visionOS build-for-testing compiles.",
     "doNot": "Do not score Shap-E mesh quality in CI."
   }
 }

@@ -41,7 +41,7 @@ On-device **3D ideation shell**: user describes a scene (or drops a photo) → A
 11. **No agent loop until-complete.** No LLM vision-evaluate of meshes. One Shap-E run per job; skip or fail visibly.
 12. **Failed Shap-E loads must retry.** Do not cache a thrown `loadTask`.
 13. **Pin ownership is two-sided.** Unbind only if that pin still belongs to the record being removed.
-14. **TripoSR is image-only.** The model picker forces image input; text prompts, Compile, and pin scenes always run on Shap-E. TripoSR single-image generation goes through the `RuntimeWrapper` facade (`ThreeDGenerationRuntime`, `.tripoSR(weightsURL:)`) and must be fed `ImageBackgroundRemoval.foregroundCutout` (alpha crop + 0.85 square pad) — never the white Shap-E composite, which TripoSR meshes as a slab. Vision masks are Float32 (`L00f`) on current OSes.
+14. **TripoSR is image-only.** The model picker forces image input; text prompts, Compile, and pin scenes always run on Shap-E. TripoSR single-image generation goes through `MLX3DSession` (mlx-3d-runtime-swift) and must be fed `ImageBackgroundRemoval.foregroundCutout` (alpha crop + 0.85 square pad) — never the white Shap-E composite, which TripoSR meshes as a slab. Vision masks are Float32 (`L00f`) on current OSes.
 
 ---
 
@@ -54,20 +54,19 @@ Mesquette/                 Swift app (Mesquette)
   Director/                    Foundation Models + pin assignment + layout
   macOS/                       Primary viewport (SceneKit + StudioCamera)
   iOS/  visionOS/              Other shells
-  ShapERuntimeStore.swift      Actor: load Shap-E off main actor
+  GenerationSessionStore.swift Actor: MLX3DSession + observable download progress
   RuntimeAssetLocator.swift    Resolution order: bundled → Background Assets → HF cache
   HFBundleDownloader.swift     Pinned HF snapshot download + SHA-256 verify (fallback)
-  TripoSRStore.swift           Actor: TripoSR facade runtime from verified weights
   MeshExporter.swift           OBJ+MTL ZIP, USDZ, face-index validation
 AssetDownloader/               StoreDownloaderExtension (hosted weights)
 AssetPacks/                    shap-e-text (essential), shap-e-image (prefetch)
 runtime_bundle/                NOT a build input anymore. Asset-pack packaging workspace only (scripts/fetch-weights.sh), gitignored
 Packages/RealityKitContent     visionOS table scene
 MesquetteTests/            unit tests (macOS + visionOS; run on macOS)
-Vendor/apple-mlx-foundations/    git submodule (signalnotnoise/apple-mlx-foundations) pinned `3de8228` (post-v0.1.0 main); shap_e/swift = local package ShapERuntime
+(no Vendor/ — runtimes are remote SwiftPM packages: mlx-3d-runtime-swift, shap-e-mlx-swift, triposr-mlx-swift)
 ```
 
-External packages: `mlx-swift` 0.31.3 (GitHub), `RuntimeWrapper` + `TripoSRRuntime` (foundations submodule; TripoSR image backend via `ThreeDGenerationRuntime`), `ShapERuntime` (local `Vendor/apple-mlx-foundations/shap_e/swift`, submodule pinned to foundations `3de8228`). Never point the Xcode project at the sibling `../apple-mlx-foundations` checkout — that is the private pre-publication archive, not the public dependency.
+External packages (all remote, branch `main` until first tags): `mlx-3d-runtime-swift` (`MLX3DRuntime` session + `Mesh`), `shap-e-mlx-swift` (`ShapERuntime` types/runtime), `triposr-mlx-swift` (transitive), `mlx-swift` 0.31.3. Never point the Xcode project at a local foundations checkout — fix runtime bugs upstream in those repos.
 
 ---
 
@@ -96,7 +95,7 @@ flowchart LR
   end
 
   subgraph sculpt [Sculpt]
-    Store[ShapERuntimeStore]
+    Store[GenerationSessionStore]
     SE[ShapERuntime text300m]
     Rec[GenerationRecord]
   end
@@ -225,7 +224,7 @@ Do not silently treat this as the pin path. Rewriting only `DirectorSystemPrompt
 | Weights | Shap-E **text300m** + CLIP ViT-L/14 77 tokens. Image pipeline (`clip_vision`, `image300m`) on first image generate |
 | Debug | No weights in the app (88 MB). First launch: `HFBundleDownloader` snapshot-downloads HF `signalNotNoise/shap-e-mlx` @ `d71f70a` (v0.1.0) into `Caches/huggingface`, SHA-256 verified + stamped for offline reuse. `scripts/fetch-weights.sh` remains only to stage `runtime_bundle/` for asset-pack packaging |
 | Release | Background Assets: `shap-e-text` essential, `shap-e-image` prefetch; HF fallback if packs unavailable. Never touch Background Assets without a team ID — `AssetPackManager` traps (does not throw) in ad-hoc builds; `RuntimeAssetLocator.hasTeamIdentifier` gates it (macOS: SecCode signing info; iOS/visionOS: embedded provisioning profile, since SecCode is macOS-only) |
-| Load | `ShapERuntimeStore` actor. Failed `loadTask` is cleared (`loadEpoch`) so Generate can retry |
+| Load | `GenerationSessionStore` actor over `MLX3DSession`. Failed Shap-E load clears task and cached bundle (`shapELoadEpoch`) so retry re-resolves |
 | GPU | `MLXForegroundGPU` binds Metal on main after the app is active |
 | Preview | `RuntimeLaunchContext.isXcodePreview` skips MLX (PreviewShell abort) |
 | Export | USDZ as-is. OBJ writes `.obj`+`.mtl`, share/save a **ZIP** of both |
@@ -250,7 +249,7 @@ Table axes: **+X right, +Z toward the user**, Y up. Pin Y is height above the ta
 
 ## 11. Tests and how to verify
 
-Test target runs on macOS via the shared scheme (`SUPPORTED_PLATFORMS = macosx xros xrsimulator`): `xcodebuild test -scheme Mesquette -destination 'platform=macOS,arch=arm64'` (101 tests). visionOS build-for-testing also compiles. **Verified compile path:**
+Test target runs on macOS via the shared scheme (`SUPPORTED_PLATFORMS = macosx xros xrsimulator`): `xcodebuild test -scheme Mesquette -destination 'platform=macOS,arch=arm64'` (109 tests). visionOS build-for-testing also compiles. **Verified compile path:**
 
 ```
 DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer \
@@ -302,7 +301,7 @@ Director/DirectorSession.swift
 Director/PinAssignment.swift
 Director/PlacementPin.swift
 GenerationRecord.swift
-ShapERuntimeStore.swift
+GenerationSessionStore.swift
 MeshExporter.swift
 ShapEMeshAdapter.swift
 macOS/MacContentView.swift

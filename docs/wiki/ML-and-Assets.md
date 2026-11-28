@@ -8,7 +8,7 @@ upstream runtime behavior belongs to apple-mlx-foundations, not this repo.
 
 - Owns: getting verified weights on disk, constructing runtimes exactly
   once, GPU-stream lifecycle, and turning user images into each backend's
-  expected input (`ShapERuntimeStore`, `TripoSRStore`, `HFBundleDownloader`,
+  expected input (`GenerationSessionStore`, `HFBundleDownloader`,
   `RuntimeAssetLocator`, `ImageBackgroundRemoval`).
 - Does not own: sampling math or mesh extraction (vendored
   `ShapERuntime`/`TripoSRRuntime` — never patch them here; move the
@@ -54,8 +54,8 @@ upstream runtime behavior belongs to apple-mlx-foundations, not this repo.
 
 ## Key Design Decisions
 
-- **Stores are actors with epoch-guarded load tasks**
-  (`ShapERuntimeStore`, mirrored by `TripoSRStore`): concurrent first
+- **The session store is an actor with an epoch-guarded load task**
+  (`GenerationSessionStore` over `MLX3DSession`): concurrent first
   calls share one load; a failed waiter clears `loadTask` only if its
   epoch is still current, so retry-after-failure always works and a stale
   failure can't cancel a newer attempt. Successful loads are cached for

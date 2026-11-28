@@ -26,8 +26,10 @@ TripoSR weights converted for MLX/Swift are published at
 [signalNotNoise/triposr-mlx](https://huggingface.co/signalNotNoise/triposr-mlx)
 (revision `17a0c5286e2b2bb6fc9e3654ca31cfc9dc4b2041`); the loaded file is
 `triposr_swift_ready.safetensors`. The Swift port lives in the
-`signalnotnoise/TripoSR` submodule of apple-mlx-foundations and is
-consumed through its `RuntimeWrapper` facade (`ThreeDGenerationRuntime`).
+`signalnotnoise/TripoSR` and published as the standalone
+[triposr-mlx-swift](https://github.com/signalnotnoise/triposr-mlx-swift)
+package; Mesquette consumes it through
+[mlx-3d-runtime-swift](https://github.com/signalnotnoise/mlx-3d-runtime-swift).
 
 ## CLIP ViT-L/14 (text/image embeddings)
 
@@ -46,9 +48,9 @@ Copyright © 2019-2020 Apple Inc. Apache License 2.0.
 
 ## ShapERuntime (companion package)
 
-The Swift/MLX Shap-E inference runtime lives in
-[apple-mlx-foundations](https://github.com/signalnotnoise/apple-mlx-foundations)
-under `shap_e/swift`, MIT licensed by signalnotnoise, vendored here as a
-git submodule at `Vendor/apple-mlx-foundations` pinned to
-`3de822836cf7358125e028bf4d75818ed6dbaf7a` (post-v0.1.0 main). It is a port of OpenAI's
+The Swift/MLX Shap-E inference runtime is the standalone
+[shap-e-mlx-swift](https://github.com/signalnotnoise/shap-e-mlx-swift)
+package (MIT, signalnotnoise), consumed here together with
+[mlx-3d-runtime-swift](https://github.com/signalnotnoise/mlx-3d-runtime-swift),
+the unified generation session over it and TripoSR. It is a port of OpenAI's
 reference implementation (see Shap-E above).

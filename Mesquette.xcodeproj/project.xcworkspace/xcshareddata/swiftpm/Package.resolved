@@ -1,6 +1,15 @@
 {
-  "originHash" : "4804eaf72acfb56091d4c7c3d3c059689e079ec618e99f95a21396fed7cf4daf",
+  "originHash" : "f52e3af5c773b3bd4762c17b999eb24105e89af4b1ddeeb505df7a7f2d73cf3e",
   "pins" : [
+    {
+      "identity" : "mlx-3d-runtime-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/signalnotnoise/mlx-3d-runtime-swift",
+      "state" : {
+        "revision" : "1dcae6faca8d962c08a46247d12587b00adb9afe",
+        "version" : "0.1.0"
+      }
+    },
     {
       "identity" : "mlx-swift",
       "kind" : "remoteSourceControl",
@@ -11,12 +20,30 @@
       }
     },
     {
+      "identity" : "shap-e-mlx-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/signalnotnoise/shap-e-mlx-swift.git",
+      "state" : {
+        "revision" : "962403e2ccef75a10c084c09c70c92899e93d328",
+        "version" : "0.1.0"
+      }
+    },
+    {
       "identity" : "swift-numerics",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-numerics",
       "state" : {
         "revision" : "0c0290ff6b24942dadb83a929ffaaa1481df04a2",
         "version" : "1.1.1"
+      }
+    },
+    {
+      "identity" : "triposr-mlx-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/signalnotnoise/triposr-mlx-swift.git",
+      "state" : {
+        "revision" : "51994056febf3be5ed726e89de169037a2fbf6a6",
+        "version" : "0.1.0"
       }
     }
   ],

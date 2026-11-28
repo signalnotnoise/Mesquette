@@ -4,7 +4,7 @@
 #if os(macOS)
 import SwiftUI
 import AppKit
-import RuntimeWrapper
+import MLX3DRuntime
 import UniformTypeIdentifiers
 import os
 
@@ -138,8 +138,8 @@ struct MacChatPanelView: View {
                 Text("Model")
                     .font(.subheadline.weight(.medium))
                 Picker("Model", selection: $appModel.generationModel) {
-                    Text("Shap-E").tag(ThreeDGenerationModel.shapE)
-                    Text("TripoSR").tag(ThreeDGenerationModel.tripoSR)
+                    Text("Shap-E").tag(MLX3DBackend.shapE)
+                    Text("TripoSR").tag(MLX3DBackend.tripoSR)
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()

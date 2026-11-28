@@ -1,4 +1,4 @@
-import RuntimeWrapper
+import MLX3DRuntime
 import XCTest
 @testable import Mesquette
 
@@ -96,7 +96,7 @@ final class HFBundleDownloaderTests: XCTestCase {
 final class ModelSelectionTests: XCTestCase {
     func testDefaultModelIsShapEOrPersisted() {
         let app = AppModel()
-        XCTAssertTrue([ThreeDGenerationModel.shapE, .tripoSR].contains(app.generationModel))
+        XCTAssertTrue([MLX3DBackend.shapE, .tripoSR].contains(app.generationModel))
     }
 
     func testSelectingTripoSRForcesImageMode() {
@@ -106,5 +106,57 @@ final class ModelSelectionTests: XCTestCase {
         app.generationModel = .tripoSR
         XCTAssertEqual(app.inputMode, .image)
         app.generationModel = .shapE  // restore persisted default for other tests
+    }
+}
+
+@MainActor
+final class GenerationModelPersistenceTests: XCTestCase {
+    private var defaults: UserDefaults!
+    private var suiteName: String!
+
+    override func setUp() {
+        super.setUp()
+        suiteName = "MesquetteTests.\(UUID().uuidString)"
+        defaults = UserDefaults(suiteName: suiteName)
+    }
+
+    override func tearDown() {
+        defaults.removePersistentDomain(forName: suiteName)
+        super.tearDown()
+    }
+
+    func testLegacyTripoSRRawValueRestores() {
+        defaults.set("triposr", forKey: "Mesquette.generationModel")
+        XCTAssertEqual(AppModel.persistedGenerationModel(defaults: defaults), .tripoSR)
+    }
+
+    func testLegacyShapERawValueRestores() {
+        defaults.set("shap-e", forKey: "Mesquette.generationModel")
+        XCTAssertEqual(AppModel.persistedGenerationModel(defaults: defaults), .shapE)
+    }
+
+    func testCurrentRawValuesStillRestore() {
+        defaults.set("tripoSR", forKey: "Mesquette.generationModel")
+        XCTAssertEqual(AppModel.persistedGenerationModel(defaults: defaults), .tripoSR)
+        defaults.set("shapE", forKey: "Mesquette.generationModel")
+        XCTAssertEqual(AppModel.persistedGenerationModel(defaults: defaults), .shapE)
+    }
+
+    func testUnknownRawValueDefaultsToShapE() {
+        defaults.set("nonsense", forKey: "Mesquette.generationModel")
+        XCTAssertEqual(AppModel.persistedGenerationModel(defaults: defaults), .shapE)
+    }
+
+    func testRestoredTripoSRForcesImageModeAtInit() {
+        let key = "Mesquette.generationModel"
+        let previous = UserDefaults.standard.string(forKey: key)
+        defer {
+            if let previous { UserDefaults.standard.set(previous, forKey: key) }
+            else { UserDefaults.standard.removeObject(forKey: key) }
+        }
+        UserDefaults.standard.set("triposr", forKey: key)
+        let app = AppModel()
+        XCTAssertEqual(app.generationModel, .tripoSR)
+        XCTAssertEqual(app.inputMode, .image)
     }
 }

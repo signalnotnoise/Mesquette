@@ -44,12 +44,12 @@ A pre-commit hook runs the same check (`scripts/install-git-hooks.sh` once per c
 
 ## Target & Directory Boundaries
 
-- `Mesquette/` — Shared app state, ML runtime stores (`ShapERuntimeStore`, `TripoSRStore`), mesh/image pipelines, and core models.
+- `Mesquette/` — Shared app state, the generation session store (`GenerationSessionStore`), mesh/image pipelines, and core models.
 - `Mesquette/Director/` — Prompt compilation, layout, staging, and pin assignment. Planner/model files stay UI- and platform-agnostic (no SwiftUI, SceneKit, or RealityKit); `DirectorAvailabilityView.swift` is the existing SwiftUI exception — don't add more.
 - `Mesquette/Components/` — Shared, platform-agnostic SwiftUI components.
 - `Mesquette/macOS/` (**primary UI**), `Mesquette/iOS/`, `Mesquette/visionOS/` — Platform-specific views, windowing, and 3D studios (`SceneKitStudio`, `ImmersiveStudio`).
 - `AssetDownloader/` & `Packages/RealityKitContent/` — Background asset extension and Reality Composer Pro assets.
-- `Vendor/apple-mlx-foundations/` — Read-only submodule; do not edit directly unless intentionally updating the submodule.
+- Runtime packages are remote SwiftPM dependencies (`mlx-3d-runtime-swift`, `shap-e-mlx-swift`, `triposr-mlx-swift`); fix runtime bugs upstream there, never by copying sources into this repo.
 
 ## Engineering Guardrails
 

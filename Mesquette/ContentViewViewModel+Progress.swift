@@ -3,7 +3,7 @@
 
 import SwiftUI
 import RealityKit
-import RuntimeWrapper
+import MLX3DRuntime
 import ShapERuntime
 import MLX
 #if canImport(UIKit)

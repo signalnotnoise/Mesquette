@@ -7,7 +7,7 @@ Shap-E jobs and placements. Structure: [`knowledge-graph.md`](../knowledge-graph
 
 - Owns: object naming/splitting, floor-vs-airborne choice, per-object
   `shapEPrompt`s, scale/material hints, slot layout, AABB fit, pin packing.
-- Does not own: mesh generation (`ShapERuntimeStore`), mesh pose/rotation
+- Does not own: mesh generation (`GenerationSessionStore`), mesh pose/rotation
   (Shap-E), rendering, or any UI. Planner code in `Mesquette/Director/` is
   Foundation-only; the one SwiftUI exception is `DirectorAvailabilityView.swift`.
 - Entry points are all called by `ContentViewModel` (Architecture page):
