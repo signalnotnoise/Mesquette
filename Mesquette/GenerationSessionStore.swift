@@ -209,6 +209,9 @@ actor GenerationSessionStore {
         shapELoadTask = nil
         if failed {
             downloadProgress = 0
+            // The resolved location may be why the load failed; never let a
+            // retry reuse it without re-resolving first.
+            shapEBundle = nil
         } else {
             publishProgress(1)
         }

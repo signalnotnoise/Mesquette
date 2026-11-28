@@ -20,8 +20,7 @@ class AppModel {
 
     /// Selected generation backend. TripoSR is image-to-3D only, so picking
     /// it forces image input; text/pin flows stay on Shap-E. Persisted.
-    var generationModel: MLX3DBackend =
-        MLX3DBackend(rawValue: UserDefaults.standard.string(forKey: "Mesquette.generationModel") ?? "") ?? .shapE {
+    var generationModel: MLX3DBackend = AppModel.persistedGenerationModel() {
         didSet {
             UserDefaults.standard.set(generationModel.rawValue, forKey: "Mesquette.generationModel")
             if generationModel == .tripoSR, inputMode == .text {
@@ -287,7 +286,28 @@ class AppModel {
     var immersiveSpaceState = ImmersiveSpaceState.closed
 #endif
 
+    /// Reads the persisted backend, migrating the previous RuntimeWrapper
+    /// raw values ("shap-e"/"triposr") to `MLX3DBackend` spellings
+    /// ("shapE"/"tripoSR") so an upgrade preserves the user's choice.
+    /// New writes use the current raw values.
+    static func persistedGenerationModel(
+        defaults: UserDefaults = .standard,
+        key: String = "Mesquette.generationModel"
+    ) -> MLX3DBackend {
+        switch defaults.string(forKey: key) {
+        case "triposr": return .tripoSR
+        case "shap-e": return .shapE
+        case let raw?: return MLX3DBackend(rawValue: raw) ?? .shapE
+        case nil: return .shapE
+        }
+    }
+
     init() {
+        // didSet does not fire during init: enforce the TripoSR/image invariant
+        // for a restored TripoSR preference here.
+        if generationModel == .tripoSR {
+            inputMode = .image
+        }
         guard !RuntimeLaunchContext.isXcodePreview else { return }
         directorAvailability = DirectorAvailabilityChecker.current()
         Task {

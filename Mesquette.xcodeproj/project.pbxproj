@@ -14,9 +14,9 @@
 		933ABE352F8DA9CB002518F6 /* MLXLinalg in Frameworks */ = {isa = PBXBuildFile; productRef = 933ABE342F8DA9CB002518F6 /* MLXLinalg */; };
 		933ABE372F8DA9CB002518F6 /* MLXNN in Frameworks */ = {isa = PBXBuildFile; productRef = 933ABE362F8DA9CB002518F6 /* MLXNN */; };
 		933ABE3A2F8DA9F7002518F6 /* ShapERuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 933ABE392F8DA9F7002518F6 /* ShapERuntime */; };
-		C7F00D132FA2CB950050C230 /* MLX3DRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = C7F00D122FA2CB950050C230 /* MLX3DRuntime */; };
 		93A4707A2F9921FC00662A91 /* bpe_simple_vocab_16e6.txt.gz in Resources */ = {isa = PBXBuildFile; fileRef = 93A470792F9921FC00662A91 /* bpe_simple_vocab_16e6.txt.gz */; };
 		B0A5E70A2F8DA96D002518F6 /* AssetDownloader.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B0A5E7012F8DA96D002518F6 /* AssetDownloader.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		C7F00D132FA2CB950050C230 /* MLX3DRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = C7F00D122FA2CB950050C230 /* MLX3DRuntime */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -766,7 +766,15 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
+/* Begin XCRemoteSwiftPackageReference section */
+		933ABE2D2F8DA9CB002518F6 /* XCRemoteSwiftPackageReference "mlx-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ml-explore/mlx-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.31.3;
+			};
+		};
 		933ABE382F8DA9F7002518F6 /* XCRemoteSwiftPackageReference "shap-e-mlx-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/signalnotnoise/shap-e-mlx-swift";
@@ -781,17 +789,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 0.1.0;
-			};
-		};
-/* End XCLocalSwiftPackageReference section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		933ABE2D2F8DA9CB002518F6 /* XCRemoteSwiftPackageReference "mlx-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ml-explore/mlx-swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.31.3;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

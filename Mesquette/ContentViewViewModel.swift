@@ -308,7 +308,10 @@ class ContentViewModel {
             guard var record = appModel.generationDict[id] else { continue }
             record.status = status
 
-            if let results = meshResults, i < results.count {
+            // Partial ticks may drop unconvertible rows upstream; a short
+            // partial list must never be zipped positionally onto records.
+            let alignedResults = (meshResults?.count == ids.count || persistFinal) ? meshResults : nil
+            if let results = alignedResults, i < results.count {
                 let mesh = results[i]
                 record.latestMesh = mesh
                 // Partials have tiny AABBs and would over-scale; wait for the final mesh.
