@@ -112,7 +112,7 @@ actor GenerationSessionStore {
         for observer in progressObservers.values { observer(downloadProgress) }
     }
 
-    private var downloadProgressSink: @Sendable (Double) -> Void {
+    private func makeDownloadProgressSink() -> @Sendable (Double) -> Void {
         { [weak self] fraction in
             Task { await self?.publishProgress(fraction) }
         }
@@ -199,7 +199,7 @@ actor GenerationSessionStore {
 
     private func performShapELoad() async throws {
         Self.applyDeviceCachePolicy()
-        let sink = await downloadProgressSink
+        let sink = makeDownloadProgressSink()
         let resolved = try await resolveShapEBundle(progress: sink)
         try await session.load(.shapE(modelBundleURL: resolved.bundle, bpeVocabularyURL: resolved.bpe))
     }

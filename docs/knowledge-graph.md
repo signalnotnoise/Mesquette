@@ -223,7 +223,7 @@ Do not silently treat this as the pin path. Rewriting only `DirectorSystemPrompt
 |---|---|
 | Weights | Shap-E **text300m** + CLIP ViT-L/14 77 tokens. Image pipeline (`clip_vision`, `image300m`) on first image generate |
 | Debug | No weights in the app (88 MB). First launch: `HFBundleDownloader` snapshot-downloads HF `signalNotNoise/shap-e-mlx` @ `d71f70a` (v0.1.0) into `Caches/huggingface`, SHA-256 verified + stamped for offline reuse. `scripts/fetch-weights.sh` remains only to stage `runtime_bundle/` for asset-pack packaging |
-| Release | Background Assets: `shap-e-text` essential, `shap-e-image` prefetch; HF fallback if packs unavailable. Never touch Background Assets without a team ID — `AssetPackManager` traps (does not throw) in ad-hoc builds; `RuntimeAssetLocator.hasTeamIdentifier` gates it (macOS: SecCode signing info; iOS/visionOS: embedded provisioning profile, since SecCode is macOS-only) |
+| Release | Background Assets: `shap-e-text` essential, `shap-e-image` prefetch; HF fallback if packs unavailable. Never touch Background Assets without a team ID — `AssetPackManager` traps (does not throw) in ad-hoc builds; `RuntimeAssetLocator.hasTeamIdentifier` gates it (macOS: SecCode signing info; iOS/visionOS: embedded provisioning profile). Runtime pins: mlx-3d-runtime-swift 0.1.1, shap-e 0.1.0, triposr 0.1.0 |
 | Load | `GenerationSessionStore` actor over `MLX3DSession`. Failed Shap-E load clears task and cached bundle (`shapELoadEpoch`) so retry re-resolves |
 | GPU | `MLXForegroundGPU` binds Metal on main after the app is active |
 | Preview | `RuntimeLaunchContext.isXcodePreview` skips MLX (PreviewShell abort) |
